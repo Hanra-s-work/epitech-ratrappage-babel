@@ -112,9 +112,9 @@ jobs:
       - name: Display the content of the build and release directorties
         run: |
           echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
-          ls -la ${{env.BUILD_DIR_WINDOWS}}
+          dir ${{env.BUILD_DIR_WINDOWS}}
           echo "Displaying content of ${{env.RELEASE_DIR_WINDOWS}}"
-          ls -la ${{env.RELEASE_DIR_WINDOWS}} 
+          dir ${{env.RELEASE_DIR_WINDOWS}} 
 
       - name: Store the program in the artifacts
         uses: actions/upload-artifact@v4
