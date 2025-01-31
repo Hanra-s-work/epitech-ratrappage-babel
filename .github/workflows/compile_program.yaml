@@ -134,39 +134,41 @@ jobs:
           echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
           dir ${{env.BUILD_DIR_WINDOWS}}
 
-      # - name: Compilation cache cleanup
-      #   run: |
-      #     echo "Removing the known for sure resources that were only needed during the compilation"
+      - name: Compilation cache cleanup
+        run: |
+          echo "Removing the known for sure resources that were only needed during the compilation"
           
-      #     :: List of items to clean up
-      #     set ITEMS=CMakeFiles CMakeCache.txt cmake_install.cmake Makefile _deps
+          :: List of items to clean up
+          set ITEMS=_deps cmake CMakeFiles Debug lib x64 cmake_install.cmake CMakeCache.txt ALL_BUILD.vcxproj ALL_BUILD.vcxproj.filters CPackConfig.cmake CPackSourceConfig.cmake cpm-package-lock.cmake CPM.cmake fclean.vcxproj fclean.vcxproj.filters INSTALL.vcxproj INSTALL.vcxproj.filters PACKAGE.vcxproj PACKAGE.vcxproj.filters ZERO_CHECK.vcxproj ZERO_CHECK.vcxproj.filters
 
-      #     :: Loop through each item
-      #     for %%I in (%ITEMS%) do (
-      #         echo Checking item: %%I
+          :: Loop through each item
+          for %%I in (%ITEMS%) do (
+              echo Checking item: %%I
               
-      #         :: Check if the item exists
-      #         if exist "%%I" (
-      #             :: Check if it is a directory
-      #             if exist "%%I\" (
-      #                 echo Removing directory: %%I
-      #                 rd /s /q "%%I"
-      #             :: Check if it is a file or symlink
-      #             ) else (
-      #                 echo Removing file: %%I
-      #                 del /q "%%I"
-      #             )
-      #         ) else (
-      #             echo Item %%I does not exist, skipping...
-      #         )
-      #     )
+              :: Check if the item exists
+              if exist "%%I" (
+                  :: Check if it is a directory
+                  if exist "%%I\" (
+                      echo Removing directory: %%I
+                      rd /s /q "%%I"
+                  :: Check if it is a file or symlink
+                  ) else (
+                      echo Removing file: %%I
+                      del /q "%%I"
+                  )
+              ) else (
+                  echo Item %%I does not exist, skipping...
+              )
+          )
 
-      #     echo Cleanup complete.
+          echo Cleanup complete.
 
       - name: Copy the build to the release directory
         run: |
           echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
-          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:${{env.ROBOCOPY_RETRY}} /W:${{env.ROBOCOPY_WAIT}} /V
+          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:${{env.ROBOCOPY_RETRY}} /W:${{env.ROBOCOPY_WAIT}} /V /LOG:robocopy.log
+          echo "copying the log to the release directory"
+          cp robocopy.log ${{env.RELEASE_DIR_WINDOWS}}
 
       - name: Display the content of the build and release directorties
         run: |
