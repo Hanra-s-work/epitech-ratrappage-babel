@@ -1,0 +1,7 @@
+1: enregistrer voix, stock, et la rejoue (buff de 5 sec) (PortAudio)
+
+2: initialiser les classes qui vont emmetre et recevoir (via son local avec la compression <Opus>)
+ 
+3: Comment initialiser une connection udp (peer to peer son qui transite entre 2 clients) (mettre l'option du nom de client)
+
+4: Construire le serveur (il permet de joindre les appels entre les 2 utilisateurs, l'appel se fait en peer to peer)

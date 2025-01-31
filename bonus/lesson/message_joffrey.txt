@@ -1,0 +1,24 @@
+Hello 
+Babel
+ 
+Vous êtes donc en rattrapage sur le projet Babel, vous pouvez push sur un dépot privé : Rattrapage-promo-2026. L'objectif de ce projet c'est de nous démontrer vos compétences en CPP.
+ 
+Je vous joint le sujet du Babel, je vous invite à prendre contact avec les APE (Antoine, Edouard, Alexandre ou Ilias) si vous avez des questions concernant l'architecture / abstraction...
+ 
+Mandatory du sujet avec adaptation :
+A documentation of your binary protocol for your communications (mandatory for follow-ups!)
+A fully UML compliant class diagram for client and server (mandatory for follow-ups!)
+A network abstraction implemented in terms of Asio or custom-made server side, and implemented in terms of Qt Network or custom-made client side.
+A Qt GUI client side.
+A C++ abstraction of PortAudio and any sound-related code.
+A C++ abstraction of Opus, and the transmission of compressed sound.
+A contact list.
+The ability to make a call.
+The ability to hang up.
+ 
+ 
+Deadline : 9février à 23h42
+ 
+Soutenance : A partir du 10 février
+ 
+Bon courage à vous.
