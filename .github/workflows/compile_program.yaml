@@ -67,7 +67,7 @@ jobs:
       - name: Copy the build to the release directory
         run: |
           echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
-          cp -rf ${{env.BUILD_DIR_LINUX}}/* ${{env.RELEASE_DIR_LINUX}}
+          cp -rvf ${{env.BUILD_DIR_LINUX}}/* ${{env.RELEASE_DIR_LINUX}}
 
       - name: Display the content of the build and release directories
         run: |
@@ -93,10 +93,6 @@ jobs:
         uses: ssrobins/install-cmake@v1
         with:
           version: ${{env.CMAKE_VERSION}}
-
-      # - name: Install CMake 3.28.3
-      #   run: |
-      #     choco install cmake --version=${{env.CMAKE_VERSION}} --allow-downgrade
 
       - name: Install Visual Studio 2019
         run: |
