@@ -1,0 +1,241 @@
+name: Compile the program for the different systems
+
+# version: 1.0.0
+#          1.0.1 - Commented out the sections in charge of creating a release and cleaning the cache because it will be collected by a 3rd workflow
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches: 
+      - main
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  CMAKE_VERSION: 3.28.3
+  GPP_VERSION: 13
+  BUILD_DIR_LINUX: build_linux
+  BUILD_DIR_WINDOWS: build_windows
+  RELEASE_DIR_LINUX: release_linux
+  RELEASE_DIR_WINDOWS: release_windows
+  OUTPUT_DIRECTORY: result
+  FINAL_OUTPUT: final_result
+  FINAL_CACHE: final_compilation_result
+
+jobs:
+  build_for_linux:
+    name: Compile and deploy for linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Access the repository
+        uses: actions/checkout@v4
+
+      - name: Install a specific version of cmake
+        uses: ssrobins/install-cmake@v1
+        with:
+          version: ${{env.CMAKE_VERSION}}
+
+      - name: Install g++ 13
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+          sudo apt update
+          sudo apt install -y g++-${{env.GPP_VERSION}}
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{env.GPP_VERSION}} 100
+          sudo update-alternatives --config g++
+      - name: Compile the program
+        run: |
+          echo "Creating directories for the build and release"
+          echo "Creating directory ${{env.BUILD_DIR_LINUX}}"
+          mkdir -p ${{env.BUILD_DIR_LINUX}}
+          echo "Creating directory ${{env.RELEASE_DIR_LINUX}}"
+          mkdir -p ${{env.RELEASE_DIR_LINUX}}
+          echo "Running cmake with the following command: cmake -S . -B ${{env.BUILD_DIR_LINUX}}"
+          cmake -S . -B ${{env.BUILD_DIR_LINUX}}
+          echo "Entering the Build directory: cd ${{env.BUILD_DIR_LINUX}}"
+          cd ${{env.BUILD_DIR_LINUX}}
+          echo "Running make with the following command: make -j$(nproc)"
+          make -j$(nproc)
+
+      - name: Display the content of the build and release directories
+        run: |
+          echo "Displaying content of ${{env.BUILD_DIR_LINUX}}"
+          ls -la ${{env.BUILD_DIR_LINUX}}
+          echo "Displaying content of ${{env.RELEASE_DIR_LINUX}}"
+          ls -la ${{env.RELEASE_DIR_LINUX}}
+
+      - name: Store the program in the artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux_program
+          path: ${{env.BUILD_DIR_LINUX}}
+
+  build_for_windows:
+    name: Compile and deploy for windows
+    runs-on: windows-latest
+    steps:
+      - name: Access the repository
+        uses: actions/checkout@v4
+
+      - name: Install Latest CMake
+        uses: ssrobins/install-cmake@v1
+        with:
+          version: ${{env.CMAKE_VERSION}}
+
+      # - name: Install CMake 3.28.3
+      #   run: |
+      #     choco install cmake --version=${{env.CMAKE_VERSION}} --allow-downgrade
+
+      - name: Install Visual Studio 2019
+        run: |
+          choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.14.29.CLI --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Component.VC.14.29.CLI"
+
+      - name: Compile the program
+        run: |
+          echo "Creating directories for the build and release"
+          echo "Creating folder ${{env.BUILD_DIR_WINDOWS}}"
+          mkdir -p ${{env.BUILD_DIR_WINDOWS}}
+          echo "Creating folder ${{env.RELEASE_DIR_WINDOWS}}"
+          mkdir -p ${{env.RELEASE_DIR_WINDOWS}}
+          echo "Running cmake with the following command: cmake -S . -B ${{env.BUILD_DIR_WINDOWS}}"
+          cmake -S . -B ${{env.BUILD_DIR_WINDOWS}}
+          echo "Running cmake --build ${{env.BUILD_DIR_WINDOWS}}"
+          cmake --build ${{env.BUILD_DIR_WINDOWS}}
+
+      - name: Display the content of the build and release directorties
+        run: |
+          echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
+          ls -la ${{env.BUILD_DIR_WINDOWS}}
+          echo "Displaying content of ${{env.RELEASE_DIR_WINDOWS}}"
+          ls -la ${{env.RELEASE_DIR_WINDOWS}} 
+
+      - name: Store the program in the artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows_program
+          path: ${{env.RELEASE_DIR_LINUX}}
+
+  upload_to_github:
+    name: Upload the program to the release
+    runs-on: ubuntu-latest
+    needs: [build_for_linux, build_for_windows]
+    steps:
+      - name: Create the folders
+        run: |
+          mkdir -p "${{env.OUTPUT_DIRECTORY}}"
+          mkdir -p "${{env.OUTPUT_DIRECTORY}}/linux"
+          mkdir -p "${{env.OUTPUT_DIRECTORY}}/windows"
+
+      - name: Download the linux program
+        uses: actions/download-artifact@v4
+        with:
+          name: linux_program
+          path: "${{env.OUTPUT_DIRECTORY}}/linux"
+
+      - name: Download the windows program
+        uses: actions/download-artifact@v4
+        with:
+          name: windows_program
+          path: "${{env.OUTPUT_DIRECTORY}}/windows"
+
+      - name: Get body message
+        id: body-message
+        run: |
+          COMMIT_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME)
+          echo "Commit message content = $COMMIT_MESSAGE"
+          if [[ -n "$COMMIT_MESSAGE" ]]; then
+            COMMIT_MESSAGE=$(git log --format=%s -n 1)
+          fi
+          if [ "$COMMIT_MESSAGE" = "" ]
+          then
+            COMMIT_MESSAGE="There is no message\n$(cat ./README.md)"
+          else
+            COMMIT_MESSAGE="${COMMIT_MESSAGE}\n$(cat ./README.md)"
+          fi
+          COMMIT_MESSAGE="${COMMIT_MESSAGE}\n\`\`\`log\n$(git log --format=%s -n 50)\n\`\`\`"
+          echo "Commit message final content = '$COMMIT_MESSAGE'"
+          # COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | awk '{printf "%s\\n", $0}')
+          # echo "COMMIT_MESSAGE=$COMMIT_MESSAGE_ESCAPED" >> $GITHUB_ENV
+          {
+            echo "COMMIT_MESSAGE<<EOH"
+            echo -e "$COMMIT_MESSAGE"
+            echo EOH
+          } >> "$GITHUB_OUTPUT"
+
+      - name: compress the content
+        id: update-generated
+        run: |
+          tar -tzvf "${{env.OUTPUT_DIRECTORY}}.tar.gz" "${{env.OUTPUT_DIRECTORY}}"
+          tar -tzvf "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.OUTPUT_DIRECTORY}}/linux"
+          tar -tzvf "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.OUTPUT_DIRECTORY}}/windows"
+          
+          mkdir -p "${{env.FINAL_OUTPUT}}"
+
+          mv "${{env.OUTPUT_DIRECTORY}}.tar.gz" "${{env.FINAL_OUTPUT}}"
+          mv "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.FINAL_OUTPUT}}"
+          mv "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.FINAL_OUTPUT}}"
+          mv "${{env.OUTPUT_DIRECTORY}}" "${{env.FINAL_OUTPUT}}"
+      
+      - name: Move the generated content to the content folder
+        run: |
+          content_folder=content
+          echo "Creating the ${content_folder} folder"
+          mkdir -p ${content_folder}
+          echo "Moving the content of ${{env.FINAL_OUTPUT}} to ${content_folder}"
+          mv ${{env.FINAL_OUTPUT}} ${content_folder}
+          echo "Creating folder ${{env.FINAL_OUTPUT}}"
+          mkdir -p ${{env.FINAL_OUTPUT}}
+          echo "Moving ${content_folder} into the folder ${{env.FINAL_OUTPUT}}"
+          mv "${content_folder}" "${{env.FINAL_OUTPUT}}/${content_folder}"
+
+      - name: Save the commit message
+        run: |
+          echo "${{ steps.body-message.outputs.COMMIT_MESSAGE }}" > "${{env.FINAL_OUTPUT}}/commit_message.txt"
+        
+      - name: Save the commit reference
+        run: |
+          echo "${{ github.ref }}" > "${{env.FINAL_OUTPUT}}/commit_reference.txt"
+
+      - name: Store the final version of the flow
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.FINAL_CACHE}}
+          path: "${{env.FINAL_OUTPUT}}"
+
+      - name: Publish binary as GitHub release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: ${{env.FINAL_OUTPUT}}/*
+          name: ${{ github.ref }}
+          body: ${{ steps.body-message.outputs.COMMIT_MESSAGE }}
+          draft: false
+          prerelease: false
+          make_latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  clean_created_cache:
+    name: Clear the cache generated during the build time
+    permissions: write-all
+    runs-on: ubuntu-latest
+    needs: [upload_to_github ]
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete Created cache
+        env:
+          GH_TOKEN: ${{ secrets.CACHE_TOKEN }}
+        run: |
+          gh cache list
+          gh cache delete --all
