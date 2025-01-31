@@ -1,3 +1,4 @@
+# Cmake cache
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -10,3 +11,40 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+
+# No build/cache files
+*.o
+*.vs
+*.env
+*.out
+*.idea
+**/out/**
+*.vscode
+*.DS_Store
+*.code-workspace
+
+# No temporary files
+*tmp*
+
+database/cache/**
+!database/cache/.gitkeep
+
+front/cache/**
+!front/cache/.gitkeep
+
+server/cache/**
+!server/cache/.gitkeep
+
+# No build files
+bootstrap
+bin/*
+build/*
+_deps/*
+dist/*
+**/_deps/*
+
+# allow sample environments
+!sample.env
+
+# No editor config files
+.vscode
