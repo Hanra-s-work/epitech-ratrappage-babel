@@ -29,6 +29,8 @@ env:
   OUTPUT_DIRECTORY: result
   FINAL_OUTPUT: final_result
   FINAL_CACHE: final_compilation_result
+  ROBOCOPY_RETRY: 5
+  ROBOCOPY_WAIT: 5
 
 jobs:
   build_for_linux:
@@ -110,10 +112,61 @@ jobs:
           echo "Running cmake --build ${{env.BUILD_DIR_WINDOWS}}"
           cmake --build ${{env.BUILD_DIR_WINDOWS}}
 
+      - name: Uninstall Visual Studio via the Visual Studio Installer
+        run: |
+          # Uninstall Visual Studio using the Visual Studio Installer
+          # This command assumes the Visual Studio Installer is already present on the system
+          $installerPath = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
+          & $installerPath --uninstall --quiet --wait --norestart
+
+      - name: Additional visual studio cleanup
+        run: |
+          # Cleanup residual files or directories
+          Remove-Item -Recurse -Force "C:\Program Files (x86)\Microsoft Visual Studio"
+          Remove-Item -Recurse -Force "C:\Users\RunnerAdmin\AppData\Local\Microsoft\VisualStudio"
+          Remove-Item -Recurse -Force "C:\Users\RunnerAdmin\AppData\Roaming\Microsoft\VisualStudio"
+          # Remove cache and other temp files Visual Studio might have left behind
+          Remove-Item -Recurse -Force "C:\Users\RunnerAdmin\AppData\Local\Microsoft\VSCommon"
+          Remove-Item -Recurse -Force "C:\Users\RunnerAdmin\AppData\Local\Temp\*"
+
+      - name: Displaying the content of the build directory
+        run: |
+          echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
+          dir ${{env.BUILD_DIR_WINDOWS}}
+
+      # - name: Compilation cache cleanup
+      #   run: |
+      #     echo "Removing the known for sure resources that were only needed during the compilation"
+          
+      #     :: List of items to clean up
+      #     set ITEMS=CMakeFiles CMakeCache.txt cmake_install.cmake Makefile _deps
+
+      #     :: Loop through each item
+      #     for %%I in (%ITEMS%) do (
+      #         echo Checking item: %%I
+              
+      #         :: Check if the item exists
+      #         if exist "%%I" (
+      #             :: Check if it is a directory
+      #             if exist "%%I\" (
+      #                 echo Removing directory: %%I
+      #                 rd /s /q "%%I"
+      #             :: Check if it is a file or symlink
+      #             ) else (
+      #                 echo Removing file: %%I
+      #                 del /q "%%I"
+      #             )
+      #         ) else (
+      #             echo Item %%I does not exist, skipping...
+      #         )
+      #     )
+
+      #     echo Cleanup complete.
+
       - name: Copy the build to the release directory
         run: |
           echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
-          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /COPYALL /R:0 /W:0
+          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:${{env.ROBOCOPY_RETRY}} /W:${{env.ROBOCOPY_WAIT}} /V
 
       - name: Display the content of the build and release directorties
         run: |
