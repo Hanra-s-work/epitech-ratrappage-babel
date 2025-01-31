@@ -64,6 +64,11 @@ jobs:
           echo "Running make with the following command: make -j$(nproc)"
           make -j$(nproc)
 
+      - name: Copy the build to the release directory
+        run: |
+          echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
+          cp -rf ${{env.BUILD_DIR_LINUX}}/* ${{env.RELEASE_DIR_LINUX}}
+
       - name: Display the content of the build and release directories
         run: |
           echo "Displaying content of ${{env.BUILD_DIR_LINUX}}"
@@ -109,6 +114,11 @@ jobs:
           echo "Running cmake --build ${{env.BUILD_DIR_WINDOWS}}"
           cmake --build ${{env.BUILD_DIR_WINDOWS}}
 
+      - name: Copy the build to the release directory
+        run: |
+          echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
+          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /COPYALL /R:0 /W:0
+
       - name: Display the content of the build and release directorties
         run: |
           echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
@@ -120,13 +130,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows_program
-          path: ${{env.RELEASE_DIR_LINUX}}
+          path: ${{env.RELEASE_DIR_WINDOWS}}
 
   upload_to_github:
     name: Upload the program to the release
     runs-on: ubuntu-latest
     needs: [build_for_linux, build_for_windows]
-    if: startsWith(github.ref, 'refs/tags/v')
+    # if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Create the folders
         run: |
