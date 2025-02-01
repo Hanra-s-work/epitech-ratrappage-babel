@@ -302,14 +302,17 @@ jobs:
           mv "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.FINAL_OUTPUT}}"
           mv "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.FINAL_OUTPUT}}"
           mv "${{env.OUTPUT_DIRECTORY}}" "${{env.FINAL_OUTPUT}}"
-          echo content of the final output
-          ls -la ${{env.FINAL_OUTPUT}}
 
       - name: Display the folders present in the current directory
         run: ls -la
-
-      - name: Verify the created archives
-        run: ls -lh ${{env.OUTPUT_DIRECTORY}}/*
+      
+      - name: Display the folders present in the current directory
+        run: |
+          echo content of the final output
+          ls -la ${{env.FINAL_OUTPUT}}
+        
+      - name: Remove the result folder from the output
+        run: rm -rf "${{env.FINAL_OUTPUT}}/${{env.OUTPUT_DIRECTORY}}"
 
       - name: Verify the content of the final output
         run: ls -la ${{env.FINAL_OUTPUT}}/*
