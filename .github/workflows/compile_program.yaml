@@ -256,6 +256,13 @@ jobs:
           name: windows_program
           path: "${{env.OUTPUT_DIRECTORY}}/windows"
 
+      - name: Verify the linux downloaded files
+        run: ls -la "${{env.OUTPUT_DIRECTORY}}/linux"
+
+      - name: Verify the windows downloaded files
+        run: ls -la "${{env.OUTPUT_DIRECTORY}}/windows"
+
+
       - name: Get body message
         id: body-message
         shell: bash
@@ -286,9 +293,9 @@ jobs:
       - name: compress the content
         id: update-generated
         run: |
-          tar -tzvf "${{env.OUTPUT_DIRECTORY}}.tar.gz" "${{env.OUTPUT_DIRECTORY}}"
-          tar -tzvf "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.OUTPUT_DIRECTORY}}/linux"
-          tar -tzvf "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.OUTPUT_DIRECTORY}}/windows"
+          tar -czvf "${{env.OUTPUT_DIRECTORY}}.tar.gz" "${{env.OUTPUT_DIRECTORY}}"
+          tar -czvf "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.OUTPUT_DIRECTORY}}/linux"
+          tar -czvf "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.OUTPUT_DIRECTORY}}/windows"
           
           mkdir -p "${{env.FINAL_OUTPUT}}"
 
