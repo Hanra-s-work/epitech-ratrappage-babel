@@ -337,8 +337,12 @@ jobs:
 
       - name: Make sure the content located in the final output is not in a subfolder
         run: |
-          echo "Moving the content of ${{env.FINAL_OUTPUT}}/* to ${{env.FINAL_OUTPUT}}"
-          mv -vf ${{env.FINAL_OUTPUT}}/* ${{env.FINAL_OUTPUT}}
+          if [ -d ${{env.FINAL_OUTPUT}}/content ]; then
+            echo "Moving the content of ${{env.FINAL_OUTPUT}}/content/* to ${{env.FINAL_OUTPUT}}"
+            mv -vf ${{env.FINAL_OUTPUT}}/content/* ${{env.FINAL_OUTPUT}}
+            echo "Removing the content folder"
+            rm -rf ${{env.FINAL_OUTPUT}}/content
+          fi
 
       - name: Display the content of the final output
         run: |
