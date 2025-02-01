@@ -140,6 +140,9 @@ jobs:
           @echo off
           echo Removing the known for sure resources that were only needed during the compilation
           
+          echo "Accessing the build directory"
+          cd "${{env.BUILD_DIR_WINDOWS}}"
+
           :: Enable delayed variable expansion
           setlocal EnableDelayedExpansion
           
