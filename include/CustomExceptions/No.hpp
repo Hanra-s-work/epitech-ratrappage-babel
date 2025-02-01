@@ -166,4 +166,82 @@ namespace CustomExceptions
         std::string _msg; //!< Stores the error message.
         const char *_buffer; //!< Buffer for formatted error message.
     };
+
+    /**
+     * @brief Exception class for missing audio streams.
+     */
+    class NoAudioStream : public std::exception {
+        public:
+        /**
+         * @brief Construct a new NoAudioStream object.
+         *
+         * @param exceptionDetails Additional details provided for the specific reason the error was raised.
+         */
+        NoAudioStream(const std::string &exceptionDetails = "");
+        /**
+         * @brief Destroy the NoAudioStream object.
+         */
+        ~NoAudioStream();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
+
+    /**
+     * @brief Exception class for missing compressed audio data.
+     */
+    class NoCompressedAudio : public std::exception {
+        public:
+        /**
+         * @brief Construct a new NoCompressedAudio object.
+         *
+         * @param exceptionDetails Additional details provided for the specific reason the error was raised.
+         */
+        NoCompressedAudio(const std::string &exceptionDetails = "");
+        /**
+         * @brief Destroy the NoCompressedAudio object.
+         */
+        ~NoCompressedAudio();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
+
+    /**
+     * @brief Exception class for missing audio packets.
+     */
+    class NoAudioPacket : public std::exception {
+        public:
+        /**
+         * @brief Construct a new NoAudioPacket object.
+         *
+         * @param exceptionDetails Additional details provided for the specific reason the error was raised.
+         */
+        NoAudioPacket(const std::string &exceptionDetails = "");
+        /**
+         * @brief Destroy the NoAudioPacket object.
+         */
+        ~NoAudioPacket();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
 }

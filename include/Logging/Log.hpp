@@ -187,7 +187,7 @@ namespace Logging
         /**
          * @brief Private constructor for singleton pattern. Logging is disabled by default.
          */
-        Log() : _debugEnabled(false) {}
+        Log();
 
         Log(const Log &) = delete;            //!< Deleted copy constructor.
         Log &operator=(const Log &) = delete; //!< Deleted assignment operator.

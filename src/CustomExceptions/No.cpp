@@ -115,4 +115,52 @@ namespace CustomExceptions
     {
         return _buffer;
     }
+
+    NoAudioStream::NoAudioStream(const std::string &exceptionDetails)
+    {
+        _msg = "Error: There is no audio stream available.\n";
+        if (!exceptionDetails.empty()) {
+            _msg += "Additional details: (" + exceptionDetails + ")";
+        }
+        _buffer = _msg.c_str();
+    };
+
+    NoAudioStream::~NoAudioStream() {};
+
+    const char *NoAudioStream::what() const noexcept
+    {
+        return _buffer;
+    }
+
+    NoCompressedAudio::NoCompressedAudio(const std::string &exceptionDetails)
+    {
+        _msg = "Error: There is no compressed audio data available.\n";
+        if (!exceptionDetails.empty()) {
+            _msg += "Additional details: (" + exceptionDetails + ")";
+        }
+        _buffer = _msg.c_str();
+    };
+
+    NoCompressedAudio::~NoCompressedAudio() {};
+
+    const char *NoCompressedAudio::what() const noexcept
+    {
+        return _buffer;
+    }
+
+    NoAudioPacket::NoAudioPacket(const std::string &exceptionDetails)
+    {
+        _msg = "Error: There is no audio packet available.\n";
+        if (!exceptionDetails.empty()) {
+            _msg += "Additional details: (" + exceptionDetails + ")";
+        }
+        _buffer = _msg.c_str();
+    };
+
+    NoAudioPacket::~NoAudioPacket() {};
+
+    const char *NoAudioPacket::what() const noexcept
+    {
+        return _buffer;
+    }
 }

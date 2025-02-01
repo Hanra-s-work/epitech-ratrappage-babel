@@ -108,10 +108,39 @@ void process_given_argument(Main &main, const std::vector<std::string> &args, st
             throw CustomExceptions::InvalidPort(args[1]);
         }
         main.setPort(port);
+    } else if (args[0] == "chunk-length" || args[0] == "cl" || args[0] == "chunklength") {
+        PRETTY_SUCCESS << "chunk length is provided: '" << args[1] << "'" << std::endl;
+        unsigned int chunkLength = MIN_RECORDING_LENGTH;
+        if (args[1].empty()) {
+            const std::string errMsg = "Error: Chunk length is required but not provided, defaulting de minimum length";
+            PRETTY_WARNING << errMsg << std::endl;
+            std::cerr << errMsg << std::endl;
+            main.setDuration(chunkLength);
+            return;
+        }
+        try {
+            chunkLength = static_cast<unsigned int>(std::stoul(args[1]));
+        }
+        catch (const std::invalid_argument &e) {
+            const std::string errMsg = "Invalid argument: '" + args[1] + "' is not a valid number.";
+            PRETTY_CRITICAL << errMsg << std::endl;
+            std::cerr << errMsg << std::endl;
+            throw CustomExceptions::InvalidDuration(args[1], Recoded::myToString(MIN_RECORDING_LENGTH), Recoded::myToString(MAX_RECORDING_LENGTH));
+        }
+        catch (const std::out_of_range &e) {
+            const std::string errMsg = "Out of range: '" + args[1] + "' is too large for an unsigned int.";
+            PRETTY_CRITICAL << errMsg << std::endl;
+            std::cerr << errMsg << std::endl;
+            throw CustomExceptions::InvalidDuration(args[1], Recoded::myToString(MIN_RECORDING_LENGTH), Recoded::myToString(MAX_RECORDING_LENGTH));
+        }
+        main.setDuration(chunkLength);
     } else if (args[0] == "debug" || args[0] == "d") {
         main.setLog(true);
         main.setDebug(true);
         PRETTY_INFO << "Debug is True" << std::endl;
+    } else if (args[0] == "echo" || args[0] == "e") {
+        main.setEcho(true);
+        PRETTY_INFO << "Echoing is True" << std::endl;
     } else if (args[0] == "config-file" || args[0] == "cf" || args[0] == "configfile") {
         PRETTY_INFO << "Config file is provided: '" << args[1] << "'" << std::endl;
         if (args[1].empty()) {

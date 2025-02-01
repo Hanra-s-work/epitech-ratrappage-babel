@@ -25,7 +25,7 @@ static void displayUsageSummary(const std::string binName)
     std::cout << "\t" << binName << " [--ip] [--port]";
     std::cout << " [--log] [--debug]";
     std::cout << " [--help] [--version]";
-    std::cout << " [--username]";
+    std::cout << " [--username] [--echo]";
     // std::cout << " [--config-file]";
     std::cout << std::endl;
 }
@@ -40,10 +40,11 @@ static void displayDetailedUsage()
     std::cout << "\t--port=\"6000\"                 \tSet the value of the port on which the program will communicate. (Default value: 6000)\n";
     std::cout << "\t--log                           \tEnable logging.\n";
     std::cout << "\t--debug                         \tEnable debug logging. (if this option is provided, the --log flag becomes forced regardless of it being provided or not)\n";
-    std::cout << "\t--help                          \tDisplay this help message and exit.\n\n";
+    std::cout << "\t--help                          \tDisplay this help message and exit.\n";
     std::cout << "\t--version                       \tDisplay the version of the program and exit.\n";
-    // std::cout << "\t--config-file=\"config.toml\"   \tSet the path to the TOML file that contains the same configuration as what you could pass as the flags to load. (Default value: client_config.toml)\n";
     std::cout << "\t--username=\"John Doe\"         \tSet the name of the caller that is going to connect (Default value: \"John Doe\")\n";
+    std::cout << "\t--echo                          \tEnable echoing of the user's input in the prompt.\n";
+    // std::cout << "\t--config-file=\"config.toml\"   \tSet the path to the TOML file that contains the same configuration as what you could pass as the flags to load. (Default value: client_config.toml)\n";
     std::cout << std::endl;
 }
 

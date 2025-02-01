@@ -2,9 +2,9 @@
 ** EPITECH PROJECT, 2024
 ** epitech-ratrappage-babel (Workspace)
 ** File description:
-** Network.hpp
+** Controls.hpp
 */
 
 #pragma once
-#include "Network/Manager.hpp"
-#include "Network/AddressHolder.hpp"
+#include "Controls/ThreadCapsule.hpp"
+#include "Controls/UserControls.hpp"

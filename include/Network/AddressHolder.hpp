@@ -8,7 +8,7 @@
 #pragma once
 
 #include <string>
-#include "Logging/Log.hpp"
+#include "Logging.hpp"
 #include "CustomExceptions.hpp"
 
 namespace Network

@@ -15,10 +15,14 @@
 #include <cctype>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
+#include "Audio.hpp"
 #include "Network.hpp"
 #include "Logging.hpp"
+#include "Controls.hpp"
 #include "TOMLLoader.hpp"
+
 
 class Main {
     public:
@@ -30,19 +34,23 @@ class Main {
     ~Main() = default;
 
     void setLog(const bool log);
+    void setEcho(const bool echo);
     void setDebug(const bool debug);
     void setIp(const std::string &ip);
     void setPort(const unsigned int port);
+    void setDuration(const unsigned int duration);
     void setUserName(const std::string &username);
     void setConfigFile(const std::string &path);
 
     void takeOff();
 
     const bool getLog() const;
+    const bool getEcho() const;
     const bool getDebug() const;
     const std::string getIp() const;
     const unsigned int getPort() const;
     const std::string getUserName() const;
+    const unsigned int getDuration() const;
     const std::string getConfigFilePath() const;
     const TOMLLoader getTOMLInstance() const;
 
@@ -78,4 +86,6 @@ class Main {
     std::string _username = "John Doe";
     TOMLLoader _toml;
     Network::AddressHolder _addresses;
+    Controls::ThreadCapsule _threadCapsule;
+    Audio::Manager _audioManager;
 };

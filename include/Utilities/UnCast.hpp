@@ -12,7 +12,7 @@
 #include <optional>
 #include <type_traits>
 
-#include "Logging/Log.hpp"
+#include "Logging.hpp"
 #include "CustomExceptions.hpp"
 
 namespace Utilities

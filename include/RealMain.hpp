@@ -14,7 +14,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "Logging/Log.hpp"
+#include "Logging.hpp"
 #include "MainClass.hpp"
 #include "Constants.hpp"
 #include "CustomExceptions.hpp"

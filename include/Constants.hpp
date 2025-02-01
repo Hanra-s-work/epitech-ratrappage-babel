@@ -15,5 +15,7 @@
 static const int MY_ERROR = 84;
 static const int MY_SUCCESS = 0;
 static const char VERSION[] = "1.0.0";
-static const unsigned int USERNAME_MAX_LENGTH = 40;
-static const unsigned int USERNAME_MIN_LENGTH = 0;
+static const unsigned int USERNAME_MIN_LENGTH = 0; // Characters
+static const unsigned int USERNAME_MAX_LENGTH = 40; // Characters
+static const unsigned int MIN_RECORDING_LENGTH = 1; // 1 second
+static const unsigned int MAX_RECORDING_LENGTH = 600; // 10 minutes

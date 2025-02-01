@@ -17,7 +17,7 @@
   * @brief Construct a new Main:: Main object
   */
 Main::Main()
-    : _toml(), _addresses()
+    : _toml(), _addresses(), _threadCapsule(), _audioManager()
 {
 };
 
@@ -28,6 +28,7 @@ Main::Main()
  * @param port The port of the program
  */
 Main::Main(const std::string &ip, const unsigned int port)
+    : _toml(), _addresses(), _threadCapsule(), _audioManager()
 {
     setIp(ip);
     setPort(port);
@@ -42,7 +43,7 @@ Main::Main(const std::string &ip, const unsigned int port)
  * @param debug Enable or disable debugging
  */
 Main::Main(const std::string &ip, const unsigned int port, const bool log, const bool debug)
-    : _toml()
+    : _toml(), _addresses(), _threadCapsule(), _audioManager()
 {
     setIp(ip);
     setPort(port);
@@ -60,7 +61,7 @@ Main::Main(const std::string &ip, const unsigned int port, const bool log, const
  * @param debug Enable or disable debugging
  */
 Main::Main(const std::string &ip, const unsigned int port, const std::string &name, const bool log, const bool debug)
-    : _toml()
+    : _toml(), _addresses(), _threadCapsule(), _audioManager()
 {
     setIp(ip);
     setPort(port);
@@ -111,6 +112,16 @@ void Main::setPort(const unsigned int port)
     _addresses.setPort(port);
 };
 
+void Main::setEcho(const bool echo)
+{
+    _threadCapsule.setEcho(echo);
+}
+
+void Main::setDuration(const unsigned int duration)
+{
+    _audioManager.setDuration(duration);
+}
+
 /**
  * @brief Set the User Name object
  *
@@ -138,6 +149,19 @@ void Main::setConfigFile(const std::string &path)
 void Main::takeOff()
 {
     std::cout << "Starting the program." << std::endl;
+    _threadCapsule.setLooping(true);
+    _threadCapsule.startThread();
+    while (_threadCapsule.isLooping()) {
+        if (_threadCapsule.isRecording()) {
+            _audioManager.startRecording();
+        } else if (_threadCapsule.isPlaying()) {
+            _audioManager.startPlaying();
+        }
+        // else{
+        //     PRETTY_DEBUG << "Waiting for user input..." << std::endl;
+        // }
+    }
+    _threadCapsule.stopThread();
 }
 
 /**
@@ -180,6 +204,11 @@ const unsigned int Main::getPort() const
     return _addresses.getPort();
 };
 
+const bool Main::getEcho() const
+{
+    return _threadCapsule.isEcho();
+}
+
 /**
  * @brief Get the User Name object
  *
@@ -189,6 +218,11 @@ const std::string Main::getUserName() const
 {
     return _username;
 };
+
+const unsigned int Main::getDuration() const
+{
+    return _audioManager.getDuration();
+}
 
 /**
  * @brief Get the Config File Path object
@@ -267,9 +301,15 @@ const std::string Main::getInfo(const unsigned int indent) const
         indentation += "\t";
     }
     std::string result = indentation + "Main:\n";
-    result += indentation + "- Ip: '" + _username + "'\n";
+    result += indentation + "- Username: '" + _username + "'\n";
     result += indentation + "- Addresses: {\n" + _addresses.getInfo(indent + 1) + indentation + "\n}\n";
-    result += indentation + "- toml: {\n" + _toml.getTOMLString() + indentation + "\n}\n";
+    if (_toml.isTOMLLoaded()) {
+        result += indentation + "- toml: {\n" + _toml.getTOMLString() + indentation + "\n}\n";
+    } else {
+        result += indentation + "- toml: {\n" + "No TOML file loaded." + indentation + "\n}\n";
+    }
+    result += indentation + "- Thread Capsule: {\n" + _threadCapsule.getInfo(indent + 1) + indentation + "\n}\n";
+    result += indentation + "- Audio Manager: {\n" + _audioManager.getInfo(indent + 1) + indentation + "\n}\n";
     return result;
 }
 

@@ -128,6 +128,58 @@ namespace CustomExceptions
     };
 
     /**
+     * @brief Exception class for invalid operations.
+     */
+    class InvalidOperation : public std::exception {
+        public:
+        /**
+         * @brief Construct a new InvalidOperation object.
+         *
+         * @param error Additional information about the error.
+         */
+        InvalidOperation(const std::string &error = "");
+        /**
+         * @brief Destroy the InvalidOperation object.
+         */
+        ~InvalidOperation();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
+
+    /**
+     * @brief Exception class for invalid operations.
+     */
+    class InvalidChoice : public std::exception {
+        public:
+        /**
+         * @brief Construct a new InvalidChoice object.
+         *
+         * @param error Additional information about the error.
+         */
+        InvalidChoice(const std::string &error = "");
+        /**
+         * @brief Destroy the InvalidChoice object.
+         */
+        ~InvalidChoice();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
+
+    /**
      * @brief Exception class for invalid durations.
      */
     class InvalidDuration : public std::exception {
