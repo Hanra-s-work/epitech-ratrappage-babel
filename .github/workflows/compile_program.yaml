@@ -258,7 +258,7 @@ jobs:
 
       - name: Get body message
         id: body-message
-        shell: /usr/bin/bash
+        shell: bash
         run: |
           COMMIT_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME)
           echo "Commit message content = $COMMIT_MESSAGE"
