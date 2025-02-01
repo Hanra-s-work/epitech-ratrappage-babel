@@ -170,12 +170,34 @@ jobs:
 
           echo Cleanup complete.
 
-      - name: Copy the build to the release directory
+      - name: Displaying the content of the build directory
         run: |
-          echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
+          echo "Displaying content of ${{env.BUILD_DIR_WINDOWS}}"
+          dir ${{env.BUILD_DIR_WINDOWS}}
+
+      - name: Copy the build to the release directory
+        shell: cmd
+        run: |
+          @echo off
+          echo Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}
+          
+          :: Run robocopy and log the output
           robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:${{env.ROBOCOPY_RETRY}} /W:${{env.ROBOCOPY_WAIT}} /V /LOG:robocopy.log
-          echo "copying the log to the release directory"
-          cp robocopy.log ${{env.RELEASE_DIR_WINDOWS}}
+          set ROBOTEXIT=%ERRORLEVEL%
+          
+          :: Copy log file to release directory
+          echo Copying the log to the release directory
+          copy robocopy.log ${{env.RELEASE_DIR_WINDOWS}}
+          
+          :: Check if robocopy failed
+          if %ROBOTEXIT% GEQ 8 (
+              echo Robocopy encountered an error (exit code: %ROBOTEXIT%)
+              echo Displaying robocopy.log:
+              type robocopy.log
+              exit /b %ROBOTEXIT%
+          )
+
+          echo Robocopy completed successfully.
 
       - name: Display the content of the build and release directorties
         run: |
