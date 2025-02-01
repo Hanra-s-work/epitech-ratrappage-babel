@@ -262,7 +262,6 @@ jobs:
       - name: Verify the windows downloaded files
         run: ls -la "${{env.OUTPUT_DIRECTORY}}/windows"
 
-
       - name: Get body message
         id: body-message
         shell: bash
@@ -303,18 +302,24 @@ jobs:
           mv "${{env.OUTPUT_DIRECTORY}}_linux.tar.gz" "${{env.FINAL_OUTPUT}}"
           mv "${{env.OUTPUT_DIRECTORY}}_windows.tar.gz" "${{env.FINAL_OUTPUT}}"
           mv "${{env.OUTPUT_DIRECTORY}}" "${{env.FINAL_OUTPUT}}"
+
+      - name: Verify the created archives
+        run: ls -lh ${{env.OUTPUT_DIRECTORY}}/*.tar.gz
+
+      - name: Verify the content of the final output
+        run: ls -la ${{env.FINAL_OUTPUT}}/*.tar.gz
       
-      - name: Move the generated content to the content folder
-        run: |
-          content_folder=content
-          echo "Creating the ${content_folder} folder"
-          mkdir -p ${content_folder}
-          echo "Moving the content of ${{env.FINAL_OUTPUT}} to ${content_folder}"
-          mv ${{env.FINAL_OUTPUT}} ${content_folder}
-          echo "Creating folder ${{env.FINAL_OUTPUT}}"
-          mkdir -p ${{env.FINAL_OUTPUT}}
-          echo "Moving ${content_folder} into the folder ${{env.FINAL_OUTPUT}}"
-          mv "${content_folder}" "${{env.FINAL_OUTPUT}}/${content_folder}"
+      # - name: Move the generated content to the content folder
+      #   run: |
+      #     content_folder=content
+      #     echo "Creating the ${content_folder} folder"
+      #     mkdir -p ${content_folder}
+      #     echo "Moving the content of ${{env.FINAL_OUTPUT}} to ${content_folder}"
+      #     mv ${{env.FINAL_OUTPUT}} ${content_folder}
+      #     echo "Creating folder ${{env.FINAL_OUTPUT}}"
+      #     mkdir -p ${{env.FINAL_OUTPUT}}
+      #     echo "Moving ${content_folder} into the folder ${{env.FINAL_OUTPUT}}"
+      #     mv "${content_folder}" "${{env.FINAL_OUTPUT}}/${content_folder}"
 
       - name: Save the commit message
         run: |
