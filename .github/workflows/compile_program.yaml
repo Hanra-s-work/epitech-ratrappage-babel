@@ -135,6 +135,7 @@ jobs:
           dir ${{env.BUILD_DIR_WINDOWS}}
 
       - name: Compilation cache cleanup
+        shell: cmd
         run: |
           echo "Removing the known for sure resources that were only needed during the compilation"
           
