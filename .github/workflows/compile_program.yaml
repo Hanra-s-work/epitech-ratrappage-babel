@@ -342,21 +342,21 @@ jobs:
           make_latest: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  clean_created_cache:
-    name: Clear the cache generated during the build time
-    permissions: write-all
-    runs-on: ubuntu-latest
-    needs: [upload_to_github ]
-    steps:
+  # clean_created_cache:
+  #   name: Clear the cache generated during the build time
+  #   permissions: write-all
+  #   runs-on: ubuntu-latest
+  #   needs: [upload_to_github ]
+  #   steps:
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Delete Created cache
-        env:
-          GH_TOKEN: ${{ secrets.CACHE_TOKEN }}
-        run: |
-          gh cache list
-          gh cache delete --all
+  #     - name: Delete Created cache
+  #       env:
+  #         GH_TOKEN: ${{ secrets.CACHE_TOKEN }}
+  #       run: |
+  #         gh cache list
+  #         gh cache delete --all
