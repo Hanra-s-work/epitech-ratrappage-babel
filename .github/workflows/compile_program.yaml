@@ -179,17 +179,17 @@ jobs:
         shell: cmd
         run: |
           @echo off
-          echo Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}
+          echo Copying the content of build_windows to release_windows
           
           :: Run robocopy and log the output
-          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:${{env.ROBOCOPY_RETRY}} /W:${{env.ROBOCOPY_WAIT}} /V /LOG:robocopy.log
+          robocopy "build_windows" "release_windows" /E /XJ /COPYALL /R:5 /W:5 /V /LOG:robocopy.log
           set ROBOTEXIT=%ERRORLEVEL%
           
           :: Copy log file to release directory
           echo Copying the log to the release directory
-          copy robocopy.log ${{env.RELEASE_DIR_WINDOWS}}
+          copy robocopy.log release_windows
           
-          :: Check if robocopy failed
+          :: Check if robocopy failed (ignore exit code 1)
           if %ROBOTEXIT% GEQ 8 (
               echo Robocopy encountered an error (exit code: %ROBOTEXIT%)
               echo Displaying robocopy.log:
@@ -197,7 +197,8 @@ jobs:
               exit /b %ROBOTEXIT%
           )
 
-          echo Robocopy completed successfully.
+          echo Robocopy completed successfully (exit code: %ROBOTEXIT%).
+          exit /b 0  :: Force success
 
       - name: Display the content of the build and release directorties
         run: |
