@@ -181,26 +181,33 @@ jobs:
           @echo off
           setlocal enabledelayedexpansion
 
-          echo Copying the content of build_windows to release_windows
+          echo "Copying the content of ${{env.BUILD_DIR_WINDOWS}} to ${{env.RELEASE_DIR_WINDOWS}}"
 
           :: Run robocopy and log the output
-          robocopy "build_windows" "release_windows" /E /XJ /COPYALL /R:5 /W:5 /V /LOG:robocopy.log
+          robocopy "${{env.BUILD_DIR_WINDOWS}}" "${{env.RELEASE_DIR_WINDOWS}}" /E /XJ /COPYALL /R:5 /W:5 /V /LOG:robocopy.log
           set ROBOTEXIT=%ERRORLEVEL%
 
           :: Copy log file to release directory
-          echo Copying the log to the release directory
-          copy robocopy.log release_windows
+          echo "Copying the log to the release directory"
+          copy "robocopy.log" "${{env.RELEASE_DIR_WINDOWS}}"
 
           :: Debugging: Print exit code
+          echo "Debugging: Print exit code"
           echo Robocopy Exit Code: %ROBOTEXIT%
 
+          :: Using delayed expansion to avoid parsing issues
+          echo "Using delayed expansion to avoid parsing issues"
+          set ROBOTEXIT=!ROBOTEXIT!
+
           :: If robocopy succeeded (exit code < 8), exit with success
+          echo "Checking if robocopy succeeded"
           if %ROBOTEXIT% LSS 8 (
               echo Robocopy completed successfully (Exit code: %ROBOTEXIT%).
               exit /b 0
           )
 
           :: Otherwise, display the log and exit with the error code
+          echo "Robocopy encountered an error!"
           echo Robocopy encountered an error! (Exit code: %ROBOTEXIT%)
           echo Displaying robocopy.log:
           type robocopy.log
