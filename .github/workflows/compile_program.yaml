@@ -235,6 +235,9 @@ jobs:
     needs: [build_for_linux, build_for_windows]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create the folders
         run: |
           mkdir -p "${{env.OUTPUT_DIRECTORY}}"
@@ -255,26 +258,29 @@ jobs:
 
       - name: Get body message
         id: body-message
+        shell: /usr/bin/bash
         run: |
           COMMIT_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME)
           echo "Commit message content = $COMMIT_MESSAGE"
-          if [[ -n "$COMMIT_MESSAGE" ]]; then
+          
+          if [[ -z "$COMMIT_MESSAGE" ]]; then
             COMMIT_MESSAGE=$(git log --format=%s -n 1)
           fi
-          if [ "$COMMIT_MESSAGE" = "" ]
-          then
+          
+          if [ -z "$COMMIT_MESSAGE" ]; then
             COMMIT_MESSAGE="There is no message\n$(cat ./README.md)"
           else
             COMMIT_MESSAGE="${COMMIT_MESSAGE}\n$(cat ./README.md)"
           fi
+
           COMMIT_MESSAGE="${COMMIT_MESSAGE}\n\`\`\`log\n$(git log --format=%s -n 50)\n\`\`\`"
+
           echo "Commit message final content = '$COMMIT_MESSAGE'"
-          # COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | awk '{printf "%s\\n", $0}')
-          # echo "COMMIT_MESSAGE=$COMMIT_MESSAGE_ESCAPED" >> $GITHUB_ENV
+
           {
             echo "COMMIT_MESSAGE<<EOH"
             echo -e "$COMMIT_MESSAGE"
-            echo EOH
+            echo "EOH"
           } >> "$GITHUB_OUTPUT"
 
       - name: compress the content
