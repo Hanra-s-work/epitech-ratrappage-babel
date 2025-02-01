@@ -202,14 +202,15 @@ jobs:
           :: If robocopy succeeded (exit code < 8), exit with success
           echo "Checking if robocopy succeeded"
           if %ROBOTEXIT% LSS 8 (
-              echo Robocopy completed successfully (Exit code: %ROBOTEXIT%).
+              echo "Robocopy completed successfully"
+              echo "Robocopy completed successfully (Exit code: %ROBOTEXIT%)."
               exit /b 0
           )
 
           :: Otherwise, display the log and exit with the error code
           echo "Robocopy encountered an error!"
-          echo Robocopy encountered an error! (Exit code: %ROBOTEXIT%)
-          echo Displaying robocopy.log:
+          echo "Robocopy encountered an error! (Exit code: %ROBOTEXIT%)"
+          echo "Displaying robocopy.log:"
           type robocopy.log
           exit /b %ROBOTEXIT%
 
