@@ -147,7 +147,7 @@ jobs:
           setlocal EnableDelayedExpansion
           
           :: List of items to clean up
-          set ITEMS=_deps cmake CMakeFiles Debug lib x64 cmake_install.cmake CMakeCache.txt ALL_BUILD.vcxproj ALL_BUILD.vcxproj.filters CPackConfig.cmake CPackSourceConfig.cmake cpm-package-lock.cmake CPM.cmake fclean.vcxproj fclean.vcxproj.filters INSTALL.vcxproj INSTALL.vcxproj.filters PACKAGE.vcxproj PACKAGE.vcxproj.filters ZERO_CHECK.vcxproj ZERO_CHECK.vcxproj.filters
+          set ITEMS=_deps cmake CMakeFiles lib x64 cmake_install.cmake CMakeCache.txt ALL_BUILD.vcxproj ALL_BUILD.vcxproj.filters CPackConfig.cmake CPackSourceConfig.cmake cpm-package-lock.cmake CPM.cmake fclean.vcxproj fclean.vcxproj.filters INSTALL.vcxproj INSTALL.vcxproj.filters PACKAGE.vcxproj PACKAGE.vcxproj.filters ZERO_CHECK.vcxproj ZERO_CHECK.vcxproj.filters
 
           :: Loop through each item
           for %%I in (!ITEMS!) do (
