@@ -37,6 +37,8 @@ CMakeUserPresets.json
 
 # No executables
 babel
+babel_client
+babel_server
 
 # No build files
 bootstrap
