@@ -330,6 +330,21 @@ jobs:
           name: ${{env.FINAL_CACHE}}
           path: "${{env.FINAL_OUTPUT}}"
 
+      - name: Display the content of the final output
+        run: |
+          echo "Displaying content of ${{env.FINAL_OUTPUT}}"
+          ls -lRa ${{env.FINAL_OUTPUT}}
+
+      - name: Make sure the content located in the final output is not in a subfolder
+        run: |
+          echo "Moving the content of ${{env.FINAL_OUTPUT}}/* to ${{env.FINAL_OUTPUT}}"
+          mv ${{env.FINAL_OUTPUT}}/* ${{env.FINAL_OUTPUT}}
+
+      - name: Display the content of the final output
+        run: |
+          echo "Displaying content of ${{env.FINAL_OUTPUT}}"
+          ls -lRa ${{env.FINAL_OUTPUT}}
+
       - name: Publish binary as GitHub release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v')
