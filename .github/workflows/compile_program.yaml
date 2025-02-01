@@ -180,25 +180,27 @@ jobs:
         run: |
           @echo off
           echo Copying the content of build_windows to release_windows
-          
+
           :: Run robocopy and log the output
           robocopy "build_windows" "release_windows" /E /XJ /COPYALL /R:5 /W:5 /V /LOG:robocopy.log
           set ROBOTEXIT=%ERRORLEVEL%
-          
+
           :: Copy log file to release directory
           echo Copying the log to the release directory
           copy robocopy.log release_windows
-          
-          :: Check if robocopy failed (ignore exit code 1)
-          if %ROBOTEXIT% GEQ 8 (
-              echo Robocopy encountered an error (exit code: %ROBOTEXIT%)
-              echo Displaying robocopy.log:
-              type robocopy.log
-              exit /b %ROBOTEXIT%
+
+          :: If robocopy succeeded (exit code < 8), exit with success
+          if %ROBOTEXIT% LSS 8 (
+              echo Robocopy completed successfully (Exit code: %ROBOTEXIT%).
+              exit /b 0
           )
 
-          echo Robocopy completed successfully (exit code: %ROBOTEXIT%).
-          exit /b 0  :: Force success
+          :: Otherwise, display the log and exit with the error code
+          echo Robocopy encountered an error! (Exit code: %ROBOTEXIT%)
+          echo Displaying robocopy.log:
+          type robocopy.log
+          exit /b %ROBOTEXIT%
+
 
       - name: Display the content of the build and release directorties
         run: |
