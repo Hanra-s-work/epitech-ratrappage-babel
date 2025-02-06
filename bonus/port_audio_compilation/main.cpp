@@ -11,6 +11,8 @@ const int NUM_SECONDS = 5;
 int main()
 {
     PaError err;
+    PaStream *stream;
+    std::vector<float> recordedSamples(SAMPLE_RATE * NUM_SECONDS); // Storing the recorded samples
 
     // Initialize PortAudio
     err = Pa_Initialize();
@@ -20,8 +22,6 @@ int main()
     }
 
     // Set up stream parameters
-    PaStream *stream;
-    std::vector<float> recordedSamples(SAMPLE_RATE * NUM_SECONDS); // Storing the recorded samples
 
     // Opening the audio stream (input and output)
     err = Pa_OpenDefaultStream(&stream,
