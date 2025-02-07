@@ -115,9 +115,14 @@ int main(int argc, char **argv)
         PortAudio audio;
         Compressor::Manager myManager;
         Network::UDP myUDP(io_context, ip, port, is_sender);
-        audio.record();
-        audio.play();
-        while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true) {
+        if (is_sender) {
+            audio.record();
+        } else {
+            audio.play();
+        }
+        // audio.record();
+        // audio.play();
+        while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true && myUDP.isConnectionAlive()) {
             if (is_sender) {
                 PRETTY_INFO << "Round " << rounds << std::endl;
                 audio.getSound(sound, 480);
@@ -125,9 +130,16 @@ int main(int argc, char **argv)
                 myManager.encode(sound, compressedSound);
                 PRETTY_INFO << "Decompressing" << std::endl;
                 PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
+                PRETTY_DEBUG << "compressed sound data: " << compressedSound << std::endl;
                 myUDP.sendRaw(reinterpret_cast<const char *>(compressedSound.data()), compressedSound.size(), ip, port);
             } else {
                 std::string receivedData = myUDP.receiveFrom(ip, port);
+                if (receivedData == "END") {
+                    std::cout << "Received end message, ending program" << std::endl;
+                    continueRunning = false;
+                    break;
+                }
+                PRETTY_INFO << "Received data size: " << receivedData.size() << std::endl;
                 PRETTY_INFO << "Received data: " << receivedData << std::endl;
                 for (int i = 0; i < receivedData.size(); i++) {
                     compressedSound.push_back(receivedData[i]);
@@ -136,6 +148,17 @@ int main(int argc, char **argv)
                 myManager.decode(compressedSound, sound);
                 audio.setPlaySound(sound);
             }
+            // if (is_sender) {
+            //     PRETTY_INFO << "Round " << rounds << std::endl;
+            //     audio.getSound(sound, 480);
+            //     PRETTY_INFO << "Compressing" << std::endl;
+            //     myManager.encode(sound, compressedSound);
+            //     PRETTY_INFO << "Decompressing" << std::endl;
+            //     PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
+            //     PRETTY_INFO << "compressed sound data: " << compressedSound << std::endl;
+            //     myManager.decode(compressedSound, sound);
+            //     audio.setPlaySound(sound);
+            // }
             PRETTY_INFO << "Round end " << rounds << std::endl;
             PRETTY_INFO << "Clearing sound buffer and compressed buffer" << std::endl;
             sound.clear();
@@ -143,8 +166,17 @@ int main(int argc, char **argv)
             PRETTY_INFO << "Sound buffer and compressed buffer cleared" << std::endl;
             rounds++;
         }
-        audio.stopRecord();
-        audio.stopPlay();
+        if (is_sender) {
+            audio.stopRecord();
+            const std::string endMessage = "END";
+            myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
+        } else {
+            audio.stopPlay();
+        }
+        // audio.stopRecord();
+        // const std::string endMessage = "END";
+        // myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
+        // audio.stopPlay();
         PRETTY_SUCCESS << "Program ended successfully" << std::endl;
         std::cout << "Program ended successfully" << std::endl;
     }
