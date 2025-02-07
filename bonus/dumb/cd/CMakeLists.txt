@@ -22,12 +22,24 @@ set(SOURCES
     # Files at the source of the program
     src/main.cpp
 
-    src/Audio/Audio.cpp
-
-    src/Logging/Log.cpp
-
+    # String handlers
     src/Recoded/ToString.cpp
 
+    # Logging
+    src/Logging/Log.cpp
+
+    # Network
+    src/Network/TCP.cpp
+    src/Network/UDP.cpp
+    src/Network/Manager.cpp
+
+    # Custom exceptions
+    src/CustomExceptions/Initialisation.cpp
+
+    # Audio manager
+    src/Audio/Manager.cpp
+
+    # Audio compression manager
     src/Compressor/Manager.cpp
 )
 

@@ -155,8 +155,6 @@ void Compressor::Manager::compress()
     _compressedStream.data.resize(compressedSize);
     _hasBeenCompressed = true;
     PRETTY_SUCCESS << "Stream compressed" << std::endl;
-
-
 }
 
 void Compressor::Manager::decompress()
@@ -236,6 +234,84 @@ void Compressor::Manager::setUncompressedStream(const Audio::Sample &data)
     _uncompressedStream = data;
     _rawStreamSet = true;
     PRETTY_SUCCESS << "Uncompressed stream set" << std::endl;
+}
+
+void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned char> &output)
+{
+    PRETTY_INFO << "Encoding the sound..." << std::endl;
+    int nbBytes = 0;
+    const int framesPerBuffer = 480;
+    std::array<unsigned char, 4000> cbits;
+
+    if (sound.empty()) {
+        PRETTY_WARNING << "The sound is empty, skipping" << std::endl;
+        return;
+    }
+    nbBytes = opus_encode_float(_encoder, sound.data(), framesPerBuffer, cbits.data(), 4000);
+    if (nbBytes <= 1) {
+        PRETTY_ERROR << "Failed to encode float" << std::endl;
+        handleOpusError(nbBytes, "failed to encode float ");
+    }
+    for (int i = 0; i != nbBytes; i++) {
+        output.push_back(cbits[i]);
+    }
+}
+
+// void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned char> &output)
+// {
+//     PRETTY_INFO << "Encoding the sound..." << std::endl;
+//     int nbBytes = 0;
+//     const int cbits_length = 4000;
+//     std::array<unsigned char, cbits_length> cbits;
+//     std::vector<float> croppedSound;
+
+
+//     if (sound.empty()) {
+//         PRETTY_WARNING << "Sound is empty" << std::endl;
+//         return;
+//     }
+//     if (sound.size() > cbits_length) {
+//         PRETTY_WARNING << "Sound is too big, size is: " << sound.size() << ", reducing" << std::endl;
+//         for (int i = 0; i < cbits_length - 1; i++) {
+//             croppedSound.push_back(sound[i]);
+//         }
+//     } else {
+//         croppedSound = sound;
+//     }
+//     PRETTY_INFO << "Sound size is " << croppedSound.size() << std::endl;
+//     nbBytes = opus_encode_float(_encoder, croppedSound.data(), 256, cbits.data(), cbits_length);
+//     if (nbBytes <= 1) {
+//         PRETTY_ERROR << "Failed to encode float" << std::endl;
+//         handleOpusError(nbBytes, "failed to encode float ");
+//     }
+//     for (int i = 0; i != nbBytes; i++) {
+//         PRETTY_DEBUG << "Encoded sound: " << cbits[i] << std::endl;
+//         output.push_back(cbits[i]);
+//     }
+//     PRETTY_INFO << "Sound encoded" << std::endl;
+// }
+
+void Compressor::Manager::decode(std::vector<unsigned char> &sound, std::vector<float> &output)
+{
+    PRETTY_INFO << "Decoding the sound..." << std::endl;
+    int nbBytes = 0;
+    const int cbit_length = 4000;
+    std::array<float, cbit_length> cbits;
+
+    if (sound.empty()) {
+        PRETTY_WARNING << "Sound is empty" << std::endl;
+        return;
+    }
+    nbBytes = opus_decode_float(_decoder, sound.data(), sound.size(), cbits.data(), cbit_length, 0);
+    if (nbBytes <= 1) {
+        PRETTY_ERROR << "Failed to decode float" << std::endl;
+        handleOpusError(nbBytes, "failed to decode float ");
+    }
+    for (int i = 0; i != nbBytes; i++) {
+        PRETTY_DEBUG << "Decoded sound: " << cbits[i] << std::endl;
+        output.push_back(cbits[i]);
+    }
+    PRETTY_INFO << "Sound decoded" << std::endl;
 }
 
 void Compressor::Manager::handleOpusError(int errorCode, const std::string &context) const
