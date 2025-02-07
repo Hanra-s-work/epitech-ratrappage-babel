@@ -6,15 +6,19 @@
 */
 
 #include "Logging.hpp"
+#include "Network.hpp"
 #include "Constants.hpp"
+#include "BootScreen.hpp"
 #include "Audio/Audio.hpp"
 #include "Compressor/Manager.hpp"
 
 int main(int argc, char **argv)
 {
+    BootScreen BootScreen;
     bool defaultDebug = false;
     bool defaultLog = false;
     bool defaultSenderMode = true;
+    unsigned int DefaultLoopLimit = 0;
     int defaultPort = 9000;
     std::string defaultIp = "0.0.0.0";
     int port = defaultPort;
@@ -22,20 +26,25 @@ int main(int argc, char **argv)
     std::string ip = defaultIp;
     bool log = defaultLog;
     bool debug = defaultDebug;
+    unsigned int maxRounds = DefaultLoopLimit;
     if (argc > 0) {
         for (int i = 0; i < argc; i++) {
             std::string arg = std::string(argv[i]);
             if (arg == "-p") {
-                port = std::stoi(argv[i + 1]);
                 if (i + 1 < argc) {
+                    port = std::stoi(argv[i + 1]);
                     i++;
+                } else {
+                    std::cout << "Missing argument parameter, use -h for help" << std::endl;
                 }
                 continue;
             }
             if (arg == "-i") {
-                ip = argv[i + 1];
                 if (i + 1 < argc) {
+                    ip = argv[i + 1];
                     i++;
+                } else {
+                    std::cout << "Missing argument parameter, use -h for help" << std::endl;
                 }
                 continue;
             }
@@ -55,9 +64,18 @@ int main(int argc, char **argv)
                 log = true;
                 continue;
             }
+            if (arg == "-m") {
+                if (i + 1 < argc) {
+                    maxRounds = std::stoi(argv[i + 1]);
+                    i++;
+                } else {
+                    std::cout << "Missing argument parameter, use -h for help" << std::endl;
+                }
+                continue;
+            }
             if (arg == "-h" || arg == "--help") {
                 std::cout << "USAGE:\n";
-                std::cout << std::string(argv[0]) << " -p <port> -i <ip>[-r <receiver> | -s <sender>]\n";
+                std::cout << std::string(argv[0]) << " -p <port> -i <ip> [-r <receiver> | -s <sender>] -d -l\n";
                 std::cout << "\n";
                 std::cout << "OPTIONS:\n";
                 std::cout << "-p <port> : Set the port to connect to (default: " << defaultPort << ")\n";
@@ -66,6 +84,7 @@ int main(int argc, char **argv)
                 std::cout << "-s <sender> : Set the client to sender mode (default: " << Recoded::myToString(defaultSenderMode) << ")\n";
                 std::cout << "-d : Enable debug mode (default: " << Recoded::myToString(defaultDebug) << ")\n";
                 std::cout << "-l : Enable log mode (default: " << Recoded::myToString(defaultLog) << ")\n";
+                std::cout << "-m <maxRounds> : Set the maximum number of rounds, 0 = endless (default: " << DefaultLoopLimit << ")\n";
                 std::cout << "\n";
                 std::cout << "AUTHOR:\n";
                 std::cout << "Written by: Henry Letellier\n";
@@ -83,25 +102,40 @@ int main(int argc, char **argv)
     Logging::Log::getInstance().setDebugEnabled(debug);
 
     PRETTY_INFO << "Starting the program" << std::endl;
+    BootScreen.display();
+
+    // Initialised asio
+    asio::io_context io_context;
+
     unsigned int rounds = 0;
-    unsigned int maxRounds = 200;
+    bool continueRunning = true;
     std::vector<float> sound;
     std::vector<unsigned char> compressedSound;
     try {
         PortAudio audio;
         Compressor::Manager myManager;
+        Network::UDP myUDP(io_context, ip, port, is_sender);
         audio.record();
         audio.play();
-        while (rounds < maxRounds) {
-            PRETTY_INFO << "Round " << rounds << std::endl;
-            audio.getSound(sound, 480);
-            PRETTY_INFO << "Compressing" << std::endl;
-            myManager.encode(sound, compressedSound);
-            PRETTY_INFO << "Decompressing" << std::endl;
-            PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
-            PRETTY_INFO << "compressed sound data: " << compressedSound << std::endl;
-            myManager.decode(compressedSound, sound);
-            audio.setPlaySound(sound);
+        while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true) {
+            if (is_sender) {
+                PRETTY_INFO << "Round " << rounds << std::endl;
+                audio.getSound(sound, 480);
+                PRETTY_INFO << "Compressing" << std::endl;
+                myManager.encode(sound, compressedSound);
+                PRETTY_INFO << "Decompressing" << std::endl;
+                PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
+                myUDP.sendRaw(reinterpret_cast<const char *>(compressedSound.data()), compressedSound.size(), ip, port);
+            } else {
+                std::string receivedData = myUDP.receiveFrom(ip, port);
+                PRETTY_INFO << "Received data: " << receivedData << std::endl;
+                for (int i = 0; i < receivedData.size(); i++) {
+                    compressedSound.push_back(receivedData[i]);
+                }
+                PRETTY_INFO << "compressed sound data: " << compressedSound << std::endl;
+                myManager.decode(compressedSound, sound);
+                audio.setPlaySound(sound);
+            }
             PRETTY_INFO << "Round end " << rounds << std::endl;
             PRETTY_INFO << "Clearing sound buffer and compressed buffer" << std::endl;
             sound.clear();
@@ -111,8 +145,11 @@ int main(int argc, char **argv)
         }
         audio.stopRecord();
         audio.stopPlay();
+        PRETTY_SUCCESS << "Program ended successfully" << std::endl;
+        std::cout << "Program ended successfully" << std::endl;
     }
     catch (const std::exception &e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
         PRETTY_ERROR << e.what() << std::endl;
         return PROGRAM_ERROR;
     }

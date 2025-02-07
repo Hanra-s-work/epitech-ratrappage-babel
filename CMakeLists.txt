@@ -21,10 +21,14 @@ set(SOURCES
 
     # Files at the source of the program
     src/main.cpp
+    src/BootScreen.cpp
 
     src/Audio/Audio.cpp
 
     src/Logging/Log.cpp
+
+    src/Network/TCP.cpp
+    src/Network/UDP.cpp
 
     src/Recoded/ToString.cpp
 

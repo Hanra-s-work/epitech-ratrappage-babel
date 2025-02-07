@@ -255,6 +255,7 @@ void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned
     for (int i = 0; i != nbBytes; i++) {
         output.push_back(cbits[i]);
     }
+    PRETTY_SUCCESS << "Sound encoded" << std::endl;
 }
 
 // void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned char> &output)
