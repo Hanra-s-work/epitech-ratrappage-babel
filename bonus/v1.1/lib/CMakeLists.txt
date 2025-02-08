@@ -1,0 +1,57 @@
+cmake_minimum_required(VERSION 3.28)
+project(babel_libraries LANGUAGES CXX)
+
+# Create an interface library for reusable libraries
+add_library(${PROJECT_NAME} INTERFACE)
+
+# Add the required libraries to the project in a single library to ease the importation
+
+# Add the CPM library in the base of the library linker
+
+# Adding cpm.cmake to the project
+set(CPM_URL "https://github.com/cpm-cmake/CPM.cmake/releases/latest/download/get_cpm.cmake")
+set(CPM_PATH "${CMAKE_BINARY_DIR}/CPM.cmake")
+
+file(DOWNLOAD
+    ${CPM_URL}
+    ${CPM_PATH}
+    SHOW_PROGRESS
+)
+
+include(${CPM_PATH})
+
+# Display for the version of the fetched library
+message(STATUS "Using CPM version: latest, from: ${CPM_URL}")
+
+# Add the asio library
+add_subdirectory(asio)
+
+target_include_directories(${PROJECT_NAME} INTERFACE ${asio_SOURCE_DIR}/asio/include)
+
+# Link Asio libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE asio)
+
+# Add the opus library
+add_subdirectory(opus)
+
+# Link opus libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE opus)
+
+# # Add the toml library
+# add_subdirectory(toml)
+
+# # Link TOML libraries
+# target_link_libraries(${PROJECT_NAME} INTERFACE toml)
+
+# Add the jack library
+add_subdirectory(jack)
+
+# Link jack libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE jack2)
+
+# Add the port audio library
+add_subdirectory(port_audio)
+
+# Link port audio libraries (skipped here due to the library being downloaded in a different way)
+# target_link_libraries(${PROJECT_NAME} INTERFACE port_audio)
+target_link_libraries(${PROJECT_NAME} INTERFACE portaudio)
