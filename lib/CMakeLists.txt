@@ -20,19 +20,6 @@ file(DOWNLOAD
 
 include(${CPM_PATH})
 
-# if(WIN32)
-# add_definitions(-DWINDOWS)
-# add_definitions(-DWINVER=0x0A00)
-# add_definitions(-D_WIN32_WINNT=0x0A00)
-# endif()
-if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} INTERFACE
-        WINDOWS
-        WINVER=0x0A00
-        _WIN32_WINNT=0x0A00
-    )
-endif()
-
 # Display for the version of the fetched library
 message(STATUS "Using CPM version: latest, from: ${CPM_URL}")
 
