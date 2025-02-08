@@ -5,6 +5,11 @@
 ** Compressor.cpp
 */
 
+/**
+ * @file Manager.cpp
+ * @brief This file contains the implementation of the Manager class, which handles audio compression and decompression using Opus.
+ */
+
 #include "Compressor/Manager.hpp"
 
 Compressor::Manager::Manager()
@@ -93,6 +98,11 @@ Compressor::Manager::~Manager()
     PRETTY_SUCCESS << "Opus manager destroyed" << std::endl;
 }
 
+/**
+ * @brief Sets the maximum packet size for compression.
+ *
+ * @param maxPacketSize The maximum packet size.
+ */
 void Compressor::Manager::setMaxPacketSize(const unsigned int maxPacketSize)
 {
     PRETTY_INFO << "Setting the maximum packet size to " << maxPacketSize << std::endl;
@@ -100,12 +110,20 @@ void Compressor::Manager::setMaxPacketSize(const unsigned int maxPacketSize)
     PRETTY_SUCCESS << "Maximum packet size set" << std::endl;
 }
 
+/**
+ * @brief Gets the maximum packet size for compression.
+ *
+ * @return The maximum packet size.
+ */
 const unsigned int Compressor::Manager::getMaxPacketSize() const
 {
     PRETTY_INFO << "Fetching the maximum packet size" << std::endl;
     return _maxPacketSize;
 }
 
+/**
+ * @brief Compresses the audio stream.
+ */
 void Compressor::Manager::compress()
 {
     PRETTY_INFO << "Checking materials before compressing..." << std::endl;
@@ -157,6 +175,9 @@ void Compressor::Manager::compress()
     PRETTY_SUCCESS << "Stream compressed" << std::endl;
 }
 
+/**
+ * @brief Decompresses the audio stream.
+ */
 void Compressor::Manager::decompress()
 {
     PRETTY_INFO << "Decompressing the stream..." << std::endl;
@@ -185,6 +206,11 @@ void Compressor::Manager::decompress()
     PRETTY_SUCCESS << "Stream has been decompressed" << std::endl;
 }
 
+/**
+ * @brief Gets the compressed audio stream.
+ *
+ * @return The compressed audio stream.
+ */
 const Compressor::Packet &Compressor::Manager::getCompressedStream() const
 {
     PRETTY_INFO << "Fetching the compressed stream" << std::endl;
@@ -197,6 +223,11 @@ const Compressor::Packet &Compressor::Manager::getCompressedStream() const
     return _compressedStream;
 }
 
+/**
+ * @brief Sets the compressed audio stream.
+ *
+ * @param data The compressed audio stream.
+ */
 void Compressor::Manager::setCompressedStream(const Compressor::Packet &data)
 {
     PRETTY_INFO << "Setting the compressed stream" << std::endl;
@@ -206,6 +237,11 @@ void Compressor::Manager::setCompressedStream(const Compressor::Packet &data)
     PRETTY_SUCCESS << "Compressed stream set" << std::endl;
 }
 
+/**
+ * @brief Gets the uncompressed audio stream.
+ *
+ * @return The uncompressed audio stream.
+ */
 const Audio::Sample &Compressor::Manager::getUncompressedStream() const
 {
     PRETTY_INFO << "Fetching the uncompressed stream" << std::endl;
@@ -218,6 +254,11 @@ const Audio::Sample &Compressor::Manager::getUncompressedStream() const
     return _uncompressedStream;
 }
 
+/**
+ * @brief Sets the uncompressed audio stream.
+ *
+ * @param data The uncompressed audio stream.
+ */
 void Compressor::Manager::setUncompressedStream(const Audio::Sample &data)
 {
     PRETTY_INFO << "Setting the uncompressed stream" << std::endl;
@@ -236,6 +277,12 @@ void Compressor::Manager::setUncompressedStream(const Audio::Sample &data)
     PRETTY_SUCCESS << "Uncompressed stream set" << std::endl;
 }
 
+/**
+ * @brief Encodes the audio data.
+ *
+ * @param sound The input audio data.
+ * @param output The encoded audio data.
+ */
 void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned char> &output)
 {
     PRETTY_INFO << "Encoding the sound..." << std::endl;
@@ -292,6 +339,12 @@ void Compressor::Manager::encode(std::vector<float> &sound, std::vector<unsigned
 //     PRETTY_INFO << "Sound encoded" << std::endl;
 // }
 
+/**
+ * @brief Decodes the audio data.
+ *
+ * @param sound The input encoded audio data.
+ * @param output The decoded audio data.
+ */
 void Compressor::Manager::decode(std::vector<unsigned char> &sound, std::vector<float> &output)
 {
     PRETTY_INFO << "Decoding the sound..." << std::endl;
@@ -315,6 +368,12 @@ void Compressor::Manager::decode(std::vector<unsigned char> &sound, std::vector<
     PRETTY_INFO << "Sound decoded" << std::endl;
 }
 
+/**
+ * @brief Handles Opus errors.
+ *
+ * @param errorCode The Opus error code.
+ * @param context The context in which the error occurred.
+ */
 void Compressor::Manager::handleOpusError(int errorCode, const std::string &context) const
 {
     PRETTY_INFO << "Handling Opus error..." << std::endl;

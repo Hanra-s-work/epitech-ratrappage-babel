@@ -1,7 +1,21 @@
+/**
+ * @file TCP.cpp
+ *
+ * @brief This file contains the implementation of the TCP class for network communication.
+ */
+
 #include "Network/TCP.hpp"
 
 namespace Network
 {
+    /**
+     * @brief Constructs a new TCP object.
+     *
+     * @param io_context The ASIO I/O context.
+     * @param ip The IP address to bind or connect to.
+     * @param port The port number to bind or connect to.
+     * @param is_sender True if the TCP object is for sending, false if for receiving.
+     */
     TCP::TCP(asio::io_context &io_context, const std::string &ip, int port, bool is_sender)
         : _io_context(io_context), _socket(io_context), _acceptor(io_context), _is_sender(is_sender)
     {
@@ -23,6 +37,9 @@ namespace Network
         }
     }
 
+    /**
+     * @brief Destroys the TCP object.
+     */
     TCP::~TCP()
     {
         if (!_is_sender && _server_thread && _server_thread->joinable()) {
@@ -32,6 +49,11 @@ namespace Network
         _acceptor.close();
     }
 
+    /**
+     * @brief Sends a message to the connected endpoint.
+     *
+     * @param message The message to send.
+     */
     void TCP::sendTo(const std::string &message)
     {
         if (_socket.is_open()) {
@@ -39,6 +61,9 @@ namespace Network
         }
     }
 
+    /**
+     * @brief Starts accepting incoming connections.
+     */
     void TCP::startAccept()
     {
         _acceptor.async_accept([this](std::error_code ec, asio::ip::tcp::socket new_socket)
@@ -52,6 +77,9 @@ namespace Network
         _io_context.run();
     }
 
+    /**
+     * @brief Starts reading messages from the connected endpoint.
+     */
     void TCP::startRead()
     {
         auto buffer = std::make_shared<std::vector<char>>(1024);
@@ -66,6 +94,11 @@ namespace Network
         );
     }
 
+    /**
+     * @brief Receives a message from the connected endpoint.
+     *
+     * @return The received message.
+     */
     std::string TCP::receive()
     {
         if (_received_packets.empty()) {
@@ -76,11 +109,21 @@ namespace Network
         return packet;
     }
 
+    /**
+     * @brief Checks if the connection is alive.
+     *
+     * @return True if the connection is alive, otherwise false.
+     */
     bool TCP::isConnectionAlive()
     {
         return _socket.is_open();
     }
 
+    /**
+     * @brief Fetches a received packet from the queue.
+     *
+     * @return The received packet.
+     */
     std::string TCP::fetchPacket()
     {
         return receive();

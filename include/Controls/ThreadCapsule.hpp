@@ -118,8 +118,15 @@ namespace Controls
          */
         const bool isRecording() const;
 
+        /**
+         * @brief Checks if the call should be hung up.
+         * @return True if the call should be hung up, false otherwise.
+         */
         const bool hangUpTheCall() const;
 
+        /**
+         * @brief Displays the prompt to the user.
+         */
         void showPrompt() const;
 
         /**

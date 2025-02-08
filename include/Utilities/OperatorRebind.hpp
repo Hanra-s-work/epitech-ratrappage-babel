@@ -5,6 +5,11 @@
 ** OperatorRebind.hpp
 */
 
+/**
+ * @file OperatorRebind.hpp
+ * @brief Provides custom operator<< overloads for various types.
+ */
+
 #pragma once
 #include <map>
 #include <set>

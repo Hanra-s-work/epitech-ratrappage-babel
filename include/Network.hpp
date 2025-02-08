@@ -5,6 +5,11 @@
 ** Network.hpp
 */
 
+/**
+ * @file Network.hpp
+ * @brief Aggregates network-related headers.
+ */
+
 #pragma once
 #include "Network/UDP.hpp"
 #include "Network/TCP.hpp"

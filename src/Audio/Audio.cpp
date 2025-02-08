@@ -5,6 +5,11 @@
 ** audio.cpp
 */
 
+/**
+ * @file Audio.cpp
+ * @brief This file contains the implementation of the PortAudio class, which manages audio input and output using PortAudio.
+ */
+
 #include "Audio/Audio.hpp"
 
 std::mutex _inMutex{};
@@ -32,6 +37,9 @@ PortAudio::~PortAudio()
     PRETTY_INFO << "PortAudio stopped" << std::endl;
 }
 
+/**
+ * @brief Initializes the input parameters for PortAudio.
+ */
 void PortAudio::initInputParameters()
 {
     PRETTY_INFO << "Initialising input parameters" << std::endl;
@@ -60,6 +68,9 @@ void PortAudio::initInputParameters()
     PRETTY_INFO << "Input parameters initialised" << std::endl;
 }
 
+/**
+ * @brief Initializes the output parameters for PortAudio.
+ */
 void PortAudio::initOutputParameters()
 {
 
@@ -89,6 +100,9 @@ void PortAudio::initOutputParameters()
     PRETTY_INFO << "Output parameters initialised" << std::endl;
 }
 
+/**
+ * @brief Starts playing the audio.
+ */
 void PortAudio::play()
 {
     PRETTY_INFO << "Starting play" << std::endl;
@@ -100,6 +114,9 @@ void PortAudio::play()
     PRETTY_INFO << "Play started" << std::endl;
 }
 
+/**
+ * @brief Stops playing the audio.
+ */
 void PortAudio::stopPlay()
 {
     PRETTY_INFO << "Stopping play" << std::endl;
@@ -110,6 +127,9 @@ void PortAudio::stopPlay()
     PRETTY_INFO << "Play stopped" << std::endl;
 }
 
+/**
+ * @brief Starts recording the audio.
+ */
 void PortAudio::record()
 {
     PRETTY_INFO << "Starting record" << std::endl;
@@ -121,6 +141,9 @@ void PortAudio::record()
     PRETTY_INFO << "Record started" << std::endl;
 }
 
+/**
+ * @brief Stops recording the audio.
+ */
 void PortAudio::stopRecord()
 {
     PRETTY_INFO << "Stopping record" << std::endl;
@@ -131,6 +154,13 @@ void PortAudio::stopRecord()
     PRETTY_INFO << "Record stopped" << std::endl;
 }
 
+/**
+ * @brief Gets the recorded sound.
+ *
+ * @param soundVector The vector to store the recorded sound.
+ * @param packetSize The size of the packet to retrieve.
+ * @return True if the sound was successfully retrieved, false otherwise.
+ */
 bool PortAudio::getSound(std::vector<float> &soundVector, int packetSize)
 {
     PRETTY_INFO << "Getting sound" << std::endl;
@@ -147,6 +177,11 @@ bool PortAudio::getSound(std::vector<float> &soundVector, int packetSize)
     return true;
 }
 
+/**
+ * @brief Sets the sound to be played.
+ *
+ * @param soundVector The vector containing the sound to be played.
+ */
 void PortAudio::setPlaySound(const std::vector<float> &soundVector)
 {
     PRETTY_INFO << "Setting sound" << std::endl;
@@ -158,6 +193,9 @@ void PortAudio::setPlaySound(const std::vector<float> &soundVector)
     PRETTY_INFO << "Sound set" << std::endl;
 }
 
+/**
+ * @brief Resets the input and output buffers.
+ */
 void PortAudio::resetBuffers()
 {
     PRETTY_INFO << "Resetting buffers" << std::endl;

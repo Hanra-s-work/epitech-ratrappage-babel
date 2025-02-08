@@ -13,6 +13,12 @@
 
 #include "Recoded/ToString.hpp"
 
+ /**
+  * @brief Converts a boolean value to its string representation.
+  *
+  * @param value The boolean value to convert.
+  * @return "true" if the value is true, otherwise "false".
+  */
 const std::string Recoded::myToString(bool value)
 {
     if (value) {

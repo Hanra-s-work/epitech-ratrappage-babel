@@ -5,6 +5,11 @@
 ** Controls.hpp
 */
 
+/**
+ * @file Controls.hpp
+ * @brief Aggregates control-related headers.
+ */
+
 #pragma once
 #include "Controls/ThreadCapsule.hpp"
 #include "Controls/UserControls.hpp"

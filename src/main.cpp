@@ -5,6 +5,12 @@
 ** main.cpp
 */
 
+/**
+ * @file main.cpp
+ *
+ * @brief File containing the main function for the program.
+ */
+
 #include "Logging.hpp"
 #include "Network.hpp"
 #include "Controls.hpp"
@@ -13,6 +19,16 @@
 #include "Audio/Audio.hpp"
 #include "Compressor/Manager.hpp"
 
+ /**
+  * @brief Main function of the program.
+  *
+  * This function initializes the program, processes command-line arguments,
+  * and starts the main loop for sending or receiving audio data.
+  *
+  * @param argc Number of command-line arguments.
+  * @param argv Array of command-line arguments.
+  * @return int Program exit status.
+  */
 int main(int argc, char **argv)
 {
     // Start the boot screen class
@@ -84,6 +100,10 @@ int main(int argc, char **argv)
                 myCapsule.setEcho(true);
                 continue;
             }
+            if (arg == "-a") {
+                BootScreen.displayAllScreens();
+                return PROGRAM_SUCCESS;
+            }
             if (arg == "-h" || arg == "--help") {
                 std::cout << "USAGE:\n";
                 std::cout << std::string(argv[0]) << " -p <port> -i <ip> [-r <receiver> | -s <sender>] -d -l\n";
@@ -97,6 +117,7 @@ int main(int argc, char **argv)
                 std::cout << "-l : Enable log mode (default: " << Recoded::myToString(defaultLog) << ")\n";
                 std::cout << "-m <maxRounds> : Set the maximum number of rounds, 0 = endless (default: " << DefaultLoopLimit << ")\n";
                 std::cout << "-e : Enable echo mode for the user prompt (default: false)\n";
+                std::cout << "-a : Display all boot screens (Epilepsy warning, all the" << Recoded::myToString(BootScreen.getAvailableScreens()) << "logos will be displayed one after the other without any delay, meaning they will come out as fast as you terminal can diplay them)\n";
                 std::cout << "\n";
                 std::cout << "VERSION:\n";
                 std::cout << "The program's version is: " << VERSION << std::endl;
@@ -141,8 +162,6 @@ int main(int argc, char **argv)
         } else {
             audio.play();
         }
-        // audio.record();
-        // audio.play();
 
         while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true && myUDP.isConnectionAlive()) {
             if (is_sender) {
@@ -177,17 +196,6 @@ int main(int argc, char **argv)
                 myManager.decode(compressedSound, sound);
                 audio.setPlaySound(sound);
             }
-            // if (is_sender) {
-            //     PRETTY_INFO << "Round " << rounds << std::endl;
-            //     audio.getSound(sound, 480);
-            //     PRETTY_INFO << "Compressing" << std::endl;
-            //     myManager.encode(sound, compressedSound);
-            //     PRETTY_INFO << "Decompressing" << std::endl;
-            //     PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
-            //     PRETTY_INFO << "compressed sound data: " << compressedSound << std::endl;
-            //     myManager.decode(compressedSound, sound);
-            //     audio.setPlaySound(sound);
-            // }
             PRETTY_INFO << "Round end " << rounds << std::endl;
             PRETTY_INFO << "Clearing sound buffer and compressed buffer" << std::endl;
             sound.clear();

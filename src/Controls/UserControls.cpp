@@ -191,6 +191,11 @@ const bool Controls::UserControls::isRecording() const
     return _recording;
 }
 
+/**
+ * @brief Checks if the call should be hung up.
+ *
+ * @return True if the call should be hung up, false otherwise.
+ */
 const bool Controls::UserControls::hangUpTheCall() const
 {
     return _hangUp;
@@ -321,6 +326,9 @@ const std::string Controls::UserControls::_gatherResponse() const
     return response;
 }
 
+/**
+ * @brief Shows the prompt to the user.
+ */
 void Controls::UserControls::showPrompt() const
 {
     // std::cout << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "Enter your choice ([r]ecord, [p]lay, [l]oop, [e]cho, [h]elp, [i]nfo, [q]uit): " << std::flush;

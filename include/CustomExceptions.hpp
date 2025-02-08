@@ -5,6 +5,11 @@
 ** CustomExceptions.hpp
 */
 
+/**
+ * @file CustomExceptions.hpp
+ * @brief Aggregates custom exception headers.
+ */
+
 #pragma once
 #include "CustomExceptions/No.hpp"
 #include "CustomExceptions/Found.hpp"

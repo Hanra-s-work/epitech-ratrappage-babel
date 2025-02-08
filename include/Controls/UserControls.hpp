@@ -94,6 +94,10 @@ namespace Controls
          */
         const bool isRecording() const;
 
+        /**
+         * @brief Checks if the call should be hung up.
+         * @return True if the call should be hung up, false otherwise.
+         */
         const bool hangUpTheCall() const;
 
         /**
@@ -164,6 +168,9 @@ namespace Controls
          */
         const std::string getInfo(const unsigned int indent = 0) const;
 
+        /**
+         * @brief Displays the prompt to the user.
+         */
         void showPrompt() const;
 
         private:
@@ -182,7 +189,7 @@ namespace Controls
 
         std::atomic<bool> _echo = false; //!< Echo state.
         std::atomic<bool> _help = false; //!< Help state.
-        std::atomic<bool> _hangUp = false; //!< Echo state.
+        std::atomic<bool> _hangUp = false; //!< Hang up state.
         std::atomic<bool> _playing = false; //!< Playing state.
         std::atomic<bool> _looping = true; //!< Looping state.
         std::atomic<bool> _recording = false; //!< Recording state.

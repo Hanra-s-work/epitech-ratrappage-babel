@@ -5,5 +5,10 @@
 ** Utilties.hpp
 */
 
+/**
+ * @file Utilities.hpp
+ * @brief Aggregates utility headers.
+ */
+
 #pragma once
 #include "Utilities/OperatorRebind.hpp"

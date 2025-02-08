@@ -5,6 +5,11 @@
 ** Logging.hpp
 */
 
+/**
+ * @file Logging.hpp
+ * @brief Aggregates logging-related headers.
+ */
+
 #pragma once
 #include "Logging/Log.hpp"
 #include "Logging/LogMacros.hpp"

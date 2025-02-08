@@ -7,7 +7,7 @@
 
 /**
  * @file Recoded.hpp
- * @brief This is an agglomerator in which all the files from Recoded folder will be included.
+ * @brief Aggregates headers from the Recoded folder.
  */
 
 #pragma once

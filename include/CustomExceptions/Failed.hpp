@@ -7,7 +7,6 @@
 
 /**
  * @file Failed.hpp
- *
  * @brief This file contains the definition of the ConnectionFailed exception class used to inform the user about failed connection attempts.
  */
 
