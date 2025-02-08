@@ -345,13 +345,9 @@ const std::string Controls::UserControls::_getUserChoice() const
  */
 void Controls::UserControls::spamUserChoice()
 {
-    std::cout << "Spamming user choice" << std::endl;
-    std::cout << "Looping:" << Recoded::myToString(_looping) << std::endl;
     while (_looping == true) {
         try {
-            std::cout << "Getting user choice" << std::endl;
             std::string resp = _getUserChoice();
-            std::cout << "User choice: '" << resp << "'" << std::endl;
             if (_echo) {
                 bool logStatus = Logging::Log::getInstance().getLogEnabled();
                 Logging::Log::getInstance().setLogEnabled(true);
