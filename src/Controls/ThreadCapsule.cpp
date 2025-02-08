@@ -28,6 +28,7 @@ void Controls::ThreadCapsule::startThread()
     if (!_running) {
         _running = true;
         _thread = std::thread(&Controls::UserControls::spamUserChoice, &_userControls);
+        std::cout << "Thread started" << std::endl;
     }
 }
 
@@ -104,6 +105,11 @@ const bool Controls::ThreadCapsule::isRecording() const
 const bool Controls::ThreadCapsule::hangUpTheCall() const
 {
     return _userControls.hangUpTheCall();
+}
+
+void Controls::ThreadCapsule::showPrompt() const
+{
+    _userControls.showPrompt();
 }
 
 void Controls::ThreadCapsule::toggleEcho()

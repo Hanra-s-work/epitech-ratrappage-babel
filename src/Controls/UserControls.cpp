@@ -16,7 +16,7 @@
 std::mutex logMutex;
 
 Controls::UserControls::UserControls()
-    : _playing(false), _recording(false), _looping(false), _echo(false), _help(false)
+    : _playing(false), _recording(false), _looping(true), _echo(false), _help(false)
 {
 }
 
@@ -107,6 +107,7 @@ void Controls::UserControls::setUserChoice(const std::string &userChoice)
     // } else
     if (userChoice == "l" || userChoice == "q" || userChoice == "esc") {
         toggleLooping();
+        _hangUp = true;
         if (isLooping()) {
             COLOUR_INFO << "Looping is enabled" << std::endl;
         } else {
@@ -122,7 +123,11 @@ void Controls::UserControls::setUserChoice(const std::string &userChoice)
     } else if (userChoice == "h") {
         toggleHelp();
     } else if (userChoice == "hu") {
+        if (isEcho()) {
+            COLOUR_INFO << "Hanging up the call" << std::endl;
+        }
         _hangUp = true;
+        toggleLooping();
     } else if (userChoice == "i") {
         COLOUR_INFO << getInfo() << std::endl;
     } else {
@@ -289,7 +294,7 @@ void Controls::UserControls::_displayHelp() const
     std::cout << RESET_COL << BACKGROUND_COL << INFO_COL << "Help:\n" << RESET_COL << BACKGROUND_COL << DEFAULT_FG;
     // std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "r:" << DEBUG_COL << " Record" << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Start a recording of a specified duration\n";
     // std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "p:" << DEBUG_COL << " Play  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Play the recording (if any are present)\n";
-    // std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "l:" << DEBUG_COL << " Loop  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Stop this loop (will stop the whole program)\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "l:" << DEBUG_COL << " Loop  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Stop this loop (will stop the whole program)\n";
     std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "hu:" << DEBUG_COL << " Hang Up  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Hang the phone up, close the connection between both concerned parties\n";
     std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "e:" << DEBUG_COL << " Echo  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Toggle if to display or not the command that was entered\n";
     std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "h:" << DEBUG_COL << " Help  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Display this help.\n";
@@ -316,6 +321,12 @@ const std::string Controls::UserControls::_gatherResponse() const
     return response;
 }
 
+void Controls::UserControls::showPrompt() const
+{
+    // std::cout << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "Enter your choice ([r]ecord, [p]lay, [l]oop, [e]cho, [h]elp, [i]nfo, [q]uit): " << std::flush;
+    std::cout << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "Enter your choice ([hu] Hang Up, [l]oop, [e]cho, [h]elp, [i]nfo, [q]uit): " << std::flush;
+}
+
 /**
  * @brief Gets the user choice from the input.
  *
@@ -324,7 +335,7 @@ const std::string Controls::UserControls::_gatherResponse() const
 const std::string Controls::UserControls::_getUserChoice() const
 {
     std::string choice;
-    std::cout << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "Enter your choice ([r]ecord, [p]lay, [l]oop, [e]cho, [h]elp, [i]nfo, [q]uit): " << std::flush;
+    showPrompt();
     choice = _gatherResponse();
     return choice;
 }
@@ -334,9 +345,13 @@ const std::string Controls::UserControls::_getUserChoice() const
  */
 void Controls::UserControls::spamUserChoice()
 {
-    while (_looping) {
+    std::cout << "Spamming user choice" << std::endl;
+    std::cout << "Looping:" << Recoded::myToString(_looping) << std::endl;
+    while (_looping == true) {
         try {
+            std::cout << "Getting user choice" << std::endl;
             std::string resp = _getUserChoice();
+            std::cout << "User choice: '" << resp << "'" << std::endl;
             if (_echo) {
                 bool logStatus = Logging::Log::getInstance().getLogEnabled();
                 Logging::Log::getInstance().setLogEnabled(true);

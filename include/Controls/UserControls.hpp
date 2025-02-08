@@ -164,6 +164,8 @@ namespace Controls
          */
         const std::string getInfo(const unsigned int indent = 0) const;
 
+        void showPrompt() const;
+
         private:
         /**
          * @brief Displays the help message.
@@ -178,12 +180,12 @@ namespace Controls
          */
         const std::string _getUserChoice() const;
 
-        std::atomic<bool> _echo; //!< Echo state.
-        std::atomic<bool> _help; //!< Help state.
-        std::atomic<bool> _hangUp; //!< Echo state.
-        std::atomic<bool> _playing; //!< Playing state.
-        std::atomic<bool> _looping; //!< Looping state.
-        std::atomic<bool> _recording; //!< Recording state.
+        std::atomic<bool> _echo = false; //!< Echo state.
+        std::atomic<bool> _help = false; //!< Help state.
+        std::atomic<bool> _hangUp = false; //!< Echo state.
+        std::atomic<bool> _playing = false; //!< Playing state.
+        std::atomic<bool> _looping = true; //!< Looping state.
+        std::atomic<bool> _recording = false; //!< Recording state.
     };
 
     /**

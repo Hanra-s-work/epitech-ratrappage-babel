@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     unsigned int maxRounds = DefaultLoopLimit;
     // Check the arguments if present
     if (argc > 0) {
-        for (int i = 0; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
             std::string arg = std::string(argv[i]);
             if (arg == "-p") {
                 if (i + 1 < argc) {
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
         }
         // audio.record();
         // audio.play();
-        std::cout << "Press q or h to hang up the call" << std::endl;
+
         while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true && myUDP.isConnectionAlive()) {
             if (is_sender) {
                 if (myCapsule.hangUpTheCall()) {
@@ -152,7 +152,6 @@ int main(int argc, char **argv)
                     PRETTY_INFO << "Sending end message" << std::endl;
                     myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
                     break;
-
                 }
                 PRETTY_INFO << "Round " << rounds << std::endl;
                 audio.getSound(sound, 480);

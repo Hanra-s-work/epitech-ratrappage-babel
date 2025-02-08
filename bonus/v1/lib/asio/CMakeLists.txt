@@ -10,7 +10,7 @@ add_library(${PROJECT_NAME} INTERFACE)
 set(LIBRARY_TAG asio-1-32-0)
 set(LIBRARY_URL "chriskohlhoff/asio")
 set(LIBRARY_NAME ${PROJECT_NAME})
-set(LIBRARY_INCLUDE_DIR ${${LIBRARY_NAME}_SOURCE_DIR}/asio/include)
+set(LIBRARY_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/asio-src/asio/include")
 
 CPMAddPackage(
     NAME ${LIBRARY_NAME}
@@ -35,6 +35,8 @@ target_include_directories(${PROJECT_NAME} INTERFACE ${LIBRARY_INCLUDE_DIR})
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} INTERFACE Threads::Threads)
+
+message(STATUS "Asio Include Dir: ${LIBRARY_INCLUDE_DIR}")
 
 # Display the version of the fetched library
 message(STATUS "Using ${PROJECT_NAME} version: ${LIBRARY_TAG}, from: ${LIBRARY_URL}")

@@ -120,6 +120,8 @@ namespace Controls
 
         const bool hangUpTheCall() const;
 
+        void showPrompt() const;
+
         /**
          * @brief Toggles the echo state.
          */
