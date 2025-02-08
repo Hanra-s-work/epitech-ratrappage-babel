@@ -32,8 +32,6 @@ message(STATUS "Using CPM version: latest, from: ${CPM_URL}")
 # Add the asio library
 add_subdirectory(asio)
 
-target_include_directories(${PROJECT_NAME} INTERFACE ${asio_SOURCE_DIR}/asio/include)
-
 # Link Asio libraries
 target_link_libraries(${PROJECT_NAME} INTERFACE asio)
 

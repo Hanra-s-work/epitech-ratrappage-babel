@@ -52,6 +52,8 @@ jobs:
           sudo apt install -y g++-${{env.GPP_VERSION}}
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{env.GPP_VERSION}} 100
           sudo update-alternatives --config g++
+          # sudo apt install libasio-dev
+          
       - name: Compile the program
         run: |
           echo "Creating directories for the build and release"
