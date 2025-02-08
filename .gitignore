@@ -39,6 +39,7 @@ CMakeUserPresets.json
 babel
 babel_client
 babel_server
+logo_display
 
 # No build files
 bootstrap
