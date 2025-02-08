@@ -7,7 +7,7 @@
 
 #pragma once
 
-static const char VERSION[] = "1.0.0";
+static const char VERSION[] = "1.1.0";
 static const unsigned int PROGRAM_ERROR = 84;
 static const unsigned int PROGRAM_SUCCESS = 0;
 static const unsigned int SAMPLE_RATE = 48000;
