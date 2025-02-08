@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.28)
-project(babel_client VERSION 1.0.0)
+project(babel_client VERSION 1.1.0)
+
+# Storing the project name in a temporary variable
+set(TMP_PROJECT_NAME ${PROJECT_NAME})
+
+# Get the logo displayer
+include(${CMAKE_CURRENT_LIST_DIR}/logo/CMakeLists.txt)
+
+# Display a random logo after defining the project
+select_random_logo()
+
+# Restore the project name
+set(PROJECT_NAME ${TMP_PROJECT_NAME})
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
