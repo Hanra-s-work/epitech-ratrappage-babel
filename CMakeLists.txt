@@ -68,12 +68,11 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Add windows compliant definition flags if the project is built on Windows
-# if(WIN32)
-# add_definitions(-DWINDOWS)
-# add_definitions(-DWINVER=0x0A00)
-# add_definitions(-D_WIN32_WINNT=0x0A00)
-# endif()
 if(WIN32)
+    # Attempting to fix the windsock2api error
+    add_compile_definitions(_WINSOCK2API_)
+
+    # Add the windows version flags
     add_compile_definitions(
         _WIN32_WINNT=0x0A00
         WINVER=0x0A00
