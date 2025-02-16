@@ -67,7 +67,7 @@ PROJECT_LOGO           = doxygen_generation/favicon/favicon-32x32.png
 # when the HTML document is shown. Doxygen will copy the logo to the output
 # directory.
 
-PROJECT_ICON           = doxygen_generation/html/files/icon/favicon.ico
+PROJECT_ICON           = doxygen_generation/favicon/favicon.ico
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is

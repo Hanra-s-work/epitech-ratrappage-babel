@@ -34,7 +34,7 @@ html {
     --side-nav-fixed-width: 335px;
     --menu-display: none;
 
-    --top-height: 120px;
+    --top-height: 136px;
     --toc-sticky-top: -25px;
     --toc-max-height: calc(100vh - 2 * var(--spacing-medium) - 25px);
 }
@@ -56,7 +56,8 @@ html {
         overflow: visible;
     }
 
-    #nav-tree, #side-nav {
+    #nav-tree,
+    #side-nav {
         height: calc(100vh - var(--top-height)) !important;
     }
 
@@ -73,6 +74,7 @@ html {
         overflow: hidden;
         background: var(--side-nav-background);
     }
+
     #main-nav {
         float: left;
         padding-right: 0;
