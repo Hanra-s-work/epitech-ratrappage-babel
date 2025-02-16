@@ -138,12 +138,12 @@ int main(int argc, char **argv)
         Compressor::Manager myManager;
         Network::UDP myUDP(io_context, ip, port, is_sender);
         BootScreen.display();
-        // if (is_sender) {
-        audio.record();
-        myCapsule.startThread();
-        // } else {
-        audio.play();
-        // }
+        if (is_sender) {
+            audio.record();
+            myCapsule.startThread();
+        } else {
+            audio.play();
+        }
 
         while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true && myUDP.isConnectionAlive()) {
             if (is_sender) {
@@ -168,7 +168,6 @@ int main(int argc, char **argv)
                 if (receivedData == "END") {
                     std::cout << "Received end message, ending program" << std::endl;
                     continueRunning = false;
-                    myCapsule.hangUpTheCall();
                     break;
                 }
                 PRETTY_INFO << "Received data size: " << receivedData.size() << std::endl;
@@ -187,13 +186,13 @@ int main(int argc, char **argv)
             PRETTY_INFO << "Sound buffer and compressed buffer cleared" << std::endl;
             rounds++;
         }
-        // if (is_sender) {
-        audio.stopRecord();
-        PRETTY_INFO << "Sending end message" << std::endl;
-        myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
-        // } else {
-        audio.stopPlay();
-        // }
+        if (is_sender) {
+            audio.stopRecord();
+            PRETTY_INFO << "Sending end message" << std::endl;
+            myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
+        } else {
+            audio.stopPlay();
+        }
         if (myCapsule.isRunning()) {
             try {
                 myCapsule.stopThread();
