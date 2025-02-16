@@ -60,51 +60,34 @@ int main(int argc, char **argv)
                 } else {
                     std::cout << "Missing argument parameter, use -h for help" << std::endl;
                 }
-                continue;
-            }
-            if (arg == "-i") {
+            } else if (arg == "-i") {
                 if (i + 1 < argc) {
                     ip = argv[i + 1];
                     i++;
                 } else {
                     std::cout << "Missing argument parameter, use -h for help" << std::endl;
                 }
-                continue;
-            }
-            if (arg == "-r") {
+            } else if (arg == "-r") {
                 is_sender = false;
-                continue;
-            }
-            if (arg == "-s") {
+            } else if (arg == "-s") {
                 is_sender = true;
-                continue;
-            }
-            if (arg == "-d") {
+            } else if (arg == "-d") {
                 debug = true;
-                continue;
-            }
-            if (arg == "-l") {
+            } else if (arg == "-l") {
                 log = true;
-                continue;
-            }
-            if (arg == "-m") {
+            } else if (arg == "-m") {
                 if (i + 1 < argc) {
                     maxRounds = std::stoi(argv[i + 1]);
                     i++;
                 } else {
                     std::cout << "Missing argument parameter, use -h for help" << std::endl;
                 }
-                continue;
-            }
-            if (arg == "-e") {
+            } else if (arg == "-e") {
                 myCapsule.setEcho(true);
-                continue;
-            }
-            if (arg == "-a") {
+            } else if (arg == "-a") {
                 BootScreen.displayAllScreens();
                 return PROGRAM_SUCCESS;
-            }
-            if (arg == "-h" || arg == "--help") {
+            } else if (arg == "-h" || arg == "--help") {
                 std::cout << "USAGE:\n";
                 std::cout << std::string(argv[0]) << " -p <port> -i <ip> [-r <receiver> | -s <sender>] -d -l\n";
                 std::cout << "\n";
@@ -128,9 +111,10 @@ int main(int argc, char **argv)
                 std::cout << "Epitech student 2025\n";
                 std::cout << "\n" << std::flush;
                 return PROGRAM_SUCCESS;
+            } else {
+                std::cout << "Invalid argument, use -h for help" << std::endl;
+                std::cout << "The argument you provided was: " << argv[i] << std::endl;
             }
-            std::cout << "Invalid argument, use -h for help" << std::endl;
-            std::cout << "The argument you provided was: " << argv[i] << std::endl;
         }
     }
 
@@ -169,6 +153,7 @@ int main(int argc, char **argv)
                     PRETTY_INFO << "Haging up the call" << std::endl;
                     continueRunning = false;
                     PRETTY_INFO << "Sending end message" << std::endl;
+                    std::cout << "Sending end message" << std::endl;
                     myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
                     break;
                 }
@@ -185,6 +170,7 @@ int main(int argc, char **argv)
                 if (receivedData == "END") {
                     std::cout << "Received end message, ending program" << std::endl;
                     continueRunning = false;
+                    myCapsule.hangUpTheCall();
                     break;
                 }
                 PRETTY_INFO << "Received data size: " << receivedData.size() << std::endl;
@@ -211,7 +197,15 @@ int main(int argc, char **argv)
             audio.stopPlay();
         }
         if (myCapsule.isRunning()) {
-            myCapsule.stopThread();
+            try {
+                myCapsule.stopThread();
+            }
+            catch (const CustomExceptions::ThreadFound &e) {
+                PRETTY_WARNING << e.what() << std::endl;
+            }
+            catch (...) {
+                PRETTY_ERROR << "The thread stopping did not heppen in a clean manner" << std::endl;
+            }
         }
         PRETTY_SUCCESS << "Program ended successfully" << std::endl;
         std::cout << "Program ended successfully" << std::endl;
