@@ -16,6 +16,7 @@
 #include <iostream>
 #include <asio.hpp>
 #include <queue>
+#include "Logging.hpp"
 
 namespace Network
 {

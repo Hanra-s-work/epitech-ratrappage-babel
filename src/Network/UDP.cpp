@@ -87,10 +87,12 @@ namespace Network
         size_t len = _socket.receive_from(asio::buffer(buffer), sender_endpoint, 0, ec);
 
         if (ec == asio::error::would_block) {
-            return ""; // No data available, return empty string
+            PRETTY_WARNING << "Would block" << std::endl;
+            return "";
         }
 
         if (ec) {
+            PRETTY_WARNING << "Receive failed: " << ec.message() << std::endl;
             throw std::runtime_error("Receive failed: " + ec.message());
         }
 

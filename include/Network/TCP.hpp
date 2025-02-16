@@ -18,6 +18,7 @@
 #include <queue>
 #include <thread>
 #include <memory>
+#include "Logging.hpp"
 
 namespace Network
 {
