@@ -28,6 +28,7 @@ namespace CustomExceptions
         public:
         /**
          * @brief Construct a new HelpFound object.
+         * Sets the message indicating that the help option was found.
          */
         HelpFound();
         /**
@@ -53,12 +54,39 @@ namespace CustomExceptions
         public:
         /**
          * @brief Construct a new VersionFound object.
+         * Sets the message indicating that the version option was found.
          */
         VersionFound();
         /**
          * @brief Destroy the VersionFound object.
          */
         ~VersionFound();
+        /**
+         * @brief Retrieves the message.
+         * @return A C-style string representing the message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the message.
+        const char *_buffer; //!< Buffer for formatted message.
+    };
+
+    /**
+     * @brief Exception class for the thread termination.
+     * This is not an error.
+     */
+    class ThreadFound : public std::exception {
+        public:
+        /**
+         * @brief Construct a new ThreadFound object.
+         * Sets the message indicating that a thread was found and terminated.
+         */
+        ThreadFound();
+        /**
+         * @brief Destroy the ThreadFound object.
+         */
+        ~ThreadFound();
         /**
          * @brief Retrieves the message.
          * @return A C-style string representing the message.
