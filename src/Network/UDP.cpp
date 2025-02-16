@@ -33,6 +33,7 @@ namespace Network
             _socket.open(endpoint.protocol());
             _socket.bind(endpoint);
         }
+        _socket.non_blocking(true);
     }
 
     /**
@@ -81,14 +82,23 @@ namespace Network
     {
         char buffer[1024];
         asio::ip::udp::endpoint sender_endpoint;
-        size_t len = _socket.receive_from(asio::buffer(buffer), sender_endpoint);
+        std::error_code ec; // Error code object
+
+        size_t len = _socket.receive_from(asio::buffer(buffer), sender_endpoint, 0, ec);
+
+        if (ec == asio::error::would_block) {
+            return ""; // No data available, return empty string
+        }
+
+        if (ec) {
+            throw std::runtime_error("Receive failed: " + ec.message());
+        }
 
         address = sender_endpoint.address().to_string();
         port = sender_endpoint.port();
 
         std::string received_data(buffer, len);
         _received_packets.push(received_data);
-
         return received_data;
     }
 
