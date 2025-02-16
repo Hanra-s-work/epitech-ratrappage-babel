@@ -38,12 +38,32 @@ void Controls::ThreadCapsule::startThread()
 /**
  * @brief Stops the thread for user controls.
  */
-void Controls::ThreadCapsule::stopThread()
+void Controls::ThreadCapsule::stopThread(const unsigned int delay)
 {
     if (_running) {
         _running = false;
+
         if (_thread.joinable()) {
-            _thread.join();
+            std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+
+            while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(delay)) {
+                if (!_thread.joinable()) {
+                    return;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+
+            std::cerr << "Thread did not stop in time. Forcibly terminating." << std::endl;
+            try {
+                std::terminate();
+                throw CustomExceptions::ThreadFound();
+            }
+            catch (const std::exception &e) {
+                std::cerr << "Error: " << e.what() << std::endl;
+            }
+            catch (...) {
+                std::cerr << "Unknown error occurred while stopping the thread." << std::endl;
+            }
         }
     }
 }

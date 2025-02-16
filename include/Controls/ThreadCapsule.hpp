@@ -35,7 +35,7 @@ namespace Controls
         /**
          * @brief Stops the thread safely.
          */
-        void stopThread();
+        void stopThread(const unsigned int delay = 2);
 
         /**
          * @brief Checks if the thread is running.
