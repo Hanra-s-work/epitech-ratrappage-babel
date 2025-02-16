@@ -9,7 +9,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
 - CMake (version 3.10 or higher)
 - A C++ compiler (GCC for Linux, Clang for macOS, Visual Studio for Windows)
 
-### Linux
+### Compile for Linux
 
 1. Install the required dependencies.
 
@@ -33,7 +33,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
 
 4. The `babel_client` binary will be located in the `build` directory as well as in the same folder from which you ran the `RUN_ME.sh` script.
 
-### macOS
+### Compile for macOS
 
 1. Install the required dependencies using Homebrew.
 
@@ -56,7 +56,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
 
 4. The `babel_client` binary will be located in the `build` directory as well as in the same folder from which you ran the `RUN_ME.sh` script.
 
-### Windows
+### Compile for Windows
 
 1. Install Visual Studio with C++ development tools and CMake.
 2. Install the required dependencies using vcpkg.
@@ -96,7 +96,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
 
 ## Running the Program
 
-### Linux
+### Run for Linux
 
 1. Open a terminal.
 2. Navigate to the directory containing the `babel_client` binary.
@@ -111,7 +111,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
    ./babel_client -p <port> -i <ip> [options]
    ```
 
-### macOS
+### Run for macOS
 
 1. Open a terminal.
 2. Navigate to the directory containing the `babel_client` binary.
@@ -126,7 +126,7 @@ This is the epitech r-type catch up project called babel responsible for allowin
    ./babel_client -p <port> -i <ip> [options]
    ```
 
-### Windows
+### Run for Windows
 
 1. Open Command Prompt.
 2. Navigate to the directory containing the `babel_client` binary.
