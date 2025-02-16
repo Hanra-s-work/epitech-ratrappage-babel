@@ -73,7 +73,12 @@ void Controls::ThreadCapsule::stopThread(const unsigned int delay)
     if (_running) {
         _running = false;
         PRETTY_INFO << "Injecting the 'q' key to stop the thread." << std::endl;
+        _userControls.setLooping(false);
+        _userControls.setPlaying(false);
         std::cin.putback('q');
+        std::cin.putback('\n');
+        std::cin.putback('\n');
+        std::cin.putback('\n');
         std::cin.putback('\n');
         if (_thread.joinable()) {
             _thread.join();

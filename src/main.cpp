@@ -36,9 +36,12 @@ int main(int argc, char **argv)
     // Start the user control options
     Controls::ThreadCapsule myCapsule;
     // Set the default values for the flags
-    bool defaultDebug = false;
     bool defaultLog = false;
+    bool defaultEcho = false;
+    bool defaultDebug = false;
     bool defaultSenderMode = true;
+    bool defaultMonoActive = false;
+    bool defaultSenderOnly = true;
     unsigned int DefaultLoopLimit = 0;
     int defaultPort = 9000;
     std::string defaultIp = "0.0.0.0";
@@ -46,9 +49,12 @@ int main(int argc, char **argv)
     int port = defaultPort;
     bool is_sender = defaultSenderMode;
     std::string ip = defaultIp;
+    bool echo = defaultEcho;
     bool log = defaultLog;
     bool debug = defaultDebug;
     unsigned int maxRounds = DefaultLoopLimit;
+    bool monoActive = defaultMonoActive;
+    bool senderOnly = defaultSenderOnly;
     // Check the arguments if present
     for (int i = 1; i < argc; i++) {
         std::string arg = std::string(argv[i]);
@@ -81,8 +87,17 @@ int main(int argc, char **argv)
             } else {
                 std::cout << "Missing argument parameter, use -h for help" << std::endl;
             }
+        } else if (arg == "-mono") {
+            monoActive = true;
+            senderOnly = true;
+        } else if (arg == "-so") {
+            monoActive = true;
+            senderOnly = true;
+        } else if (arg == "-ro") {
+            monoActive = true;
+            senderOnly = false;
         } else if (arg == "-e") {
-            myCapsule.setEcho(true);
+            echo = true;
         } else if (arg == "-a") {
             BootScreen.displayAllScreens();
             return PROGRAM_SUCCESS;
@@ -93,13 +108,17 @@ int main(int argc, char **argv)
             std::cout << "OPTIONS:\n";
             std::cout << "-p <port> : Set the port to connect to (default: " << defaultPort << ")\n";
             std::cout << "-i <ip> : Set the ip to connect to (default: " << defaultIp << ")\n";
-            std::cout << "-r <receiver> : Set the client to receiver mode (default: " << Recoded::myToString(!defaultSenderMode) << "\n";
-            std::cout << "-s <sender> : Set the client to sender mode (default: " << Recoded::myToString(defaultSenderMode) << ")\n";
+            std::cout << "-r <receiver> : Set the client to receiver mode [This is for the connection reasons] (default: " << Recoded::myToString(!defaultSenderMode) << "\n";
+            std::cout << "-s <sender> : Set the client to sender mode [This is for the connection reasons] (default: " << Recoded::myToString(defaultSenderMode) << ")\n";
             std::cout << "-d : Enable debug mode (default: " << Recoded::myToString(defaultDebug) << ")\n";
             std::cout << "-l : Enable log mode (default: " << Recoded::myToString(defaultLog) << ")\n";
             std::cout << "-m <maxRounds> : Set the maximum number of rounds, 0 = endless (default: " << DefaultLoopLimit << ")\n";
-            std::cout << "-e : Enable echo mode for the user prompt (default: false)\n";
+            std::cout << "-e : Enable echo mode for the user prompt (default: " << Recoded::myToString(defaultEcho) << ")\n";
             std::cout << "-a : Display all boot screens (Epilepsy warning, all the" << Recoded::myToString(BootScreen.getAvailableScreens()) << "logos will be displayed one after the other without any delay, meaning they will come out as fast as you terminal can diplay them)\n";
+            std::cout << "-h, --help : Display this help message\n";
+            std::cout << "-mono : Set the program to mono mode [This is for the audio management] (default " << Recoded::myToString(defaultMonoActive) << ")\n";
+            std::cout << "-so : Set the program to sender only mode, will set mono mode to true [This is for the audio management] (default " << Recoded::myToString(defaultSenderOnly) << ")\n";
+            std::cout << "-ro : Set the program to receiver only mode, will set mono mode to true [This is for the audio management] (default " << Recoded::myToString(!defaultSenderOnly) << ")\n";
             std::cout << "\n";
             std::cout << "VERSION:\n";
             std::cout << "The program's version is: " << VERSION << std::endl;
@@ -120,6 +139,8 @@ int main(int argc, char **argv)
     Logging::Log::getInstance().setLogEnabled(log);
     Logging::Log::getInstance().setDebugEnabled(debug);
 
+    myCapsule.setEcho(echo);
+
     PRETTY_INFO << "Starting the program" << std::endl;
 
     // Initialised asio
@@ -138,15 +159,55 @@ int main(int argc, char **argv)
         Compressor::Manager myManager;
         Network::UDP myUDP(io_context, ip, port, is_sender);
         BootScreen.display();
-        if (is_sender) {
+        if (monoActive) {
+            if (senderOnly) {
+                audio.record();
+                myCapsule.startThread();
+            } else {
+                audio.play();
+            }
+        } else {
             audio.record();
             myCapsule.startThread();
-        } else {
             audio.play();
         }
 
         while ((rounds < maxRounds || maxRounds == 0) && continueRunning == true && myUDP.isConnectionAlive()) {
-            if (is_sender) {
+            if (monoActive) {
+                if (senderOnly) {
+                    if (myCapsule.hangUpTheCall()) {
+                        PRETTY_INFO << "Haging up the call" << std::endl;
+                        continueRunning = false;
+                        PRETTY_INFO << "Sending end message" << std::endl;
+                        std::cout << "Sending end message" << std::endl;
+                        myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
+                        break;
+                    }
+                    PRETTY_INFO << "Round " << rounds << std::endl;
+                    audio.getSound(sound, 480);
+                    PRETTY_INFO << "Compressing" << std::endl;
+                    myManager.encode(sound, compressedSound);
+                    PRETTY_INFO << "Decompressing" << std::endl;
+                    PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
+                    PRETTY_DEBUG << "compressed sound data: " << compressedSound << std::endl;
+                    myUDP.sendRaw(reinterpret_cast<const char *>(compressedSound.data()), compressedSound.size(), ip, port);
+                } else {
+                    std::string receivedData = myUDP.receiveFrom(ip, port);
+                    if (receivedData == "END") {
+                        std::cout << "Received end message, ending program" << std::endl;
+                        continueRunning = false;
+                        break;
+                    }
+                    PRETTY_INFO << "Received data size: " << receivedData.size() << std::endl;
+                    PRETTY_INFO << "Received data: " << receivedData << std::endl;
+                    for (int i = 0; i < receivedData.size(); i++) {
+                        compressedSound.push_back(receivedData[i]);
+                    }
+                    PRETTY_INFO << "compressed sound data: " << compressedSound << std::endl;
+                    myManager.decode(compressedSound, sound);
+                    audio.setPlaySound(sound);
+                }
+            } else {
                 if (myCapsule.hangUpTheCall()) {
                     PRETTY_INFO << "Haging up the call" << std::endl;
                     continueRunning = false;
@@ -163,7 +224,7 @@ int main(int argc, char **argv)
                 PRETTY_INFO << "compressedSound size: " << compressedSound.size() << std::endl;
                 PRETTY_DEBUG << "compressed sound data: " << compressedSound << std::endl;
                 myUDP.sendRaw(reinterpret_cast<const char *>(compressedSound.data()), compressedSound.size(), ip, port);
-            } else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 std::string receivedData = myUDP.receiveFrom(ip, port);
                 if (receivedData == "END") {
                     std::cout << "Received end message, ending program" << std::endl;
@@ -186,11 +247,18 @@ int main(int argc, char **argv)
             PRETTY_INFO << "Sound buffer and compressed buffer cleared" << std::endl;
             rounds++;
         }
-        if (is_sender) {
+        if (monoActive) {
+            if (senderOnly) {
+                audio.stopRecord();
+                PRETTY_INFO << "Sending end message" << std::endl;
+                myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
+            } else {
+                audio.stopPlay();
+            }
+        } else {
             audio.stopRecord();
             PRETTY_INFO << "Sending end message" << std::endl;
             myUDP.sendRaw(endMessage.c_str(), endMessage.size(), ip, port);
-        } else {
             audio.stopPlay();
         }
         if (myCapsule.isRunning()) {

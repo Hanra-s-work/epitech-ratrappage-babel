@@ -299,12 +299,12 @@ void Controls::UserControls::_displayHelp() const
     std::cout << RESET_COL << BACKGROUND_COL << INFO_COL << "Help:\n" << RESET_COL << BACKGROUND_COL << DEFAULT_FG;
     // std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "r:" << DEBUG_COL << " Record" << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Start a recording of a specified duration\n";
     // std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "p:" << DEBUG_COL << " Play  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Play the recording (if any are present)\n";
-    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "l:" << DEBUG_COL << " Loop  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Stop this loop (will stop the whole program)\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << " l:" << DEBUG_COL << " Loop  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Stop this loop (will stop the whole program)\n";
     std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "hu:" << DEBUG_COL << " Hang Up  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Hang the phone up, close the connection between both concerned parties\n";
-    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "e:" << DEBUG_COL << " Echo  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Toggle if to display or not the command that was entered\n";
-    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "h:" << DEBUG_COL << " Help  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Display this help.\n";
-    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "i:" << DEBUG_COL << " Info  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Display the current state of the user command prompt configuration\n";
-    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << "q:" << DEBUG_COL << " Quit  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Exit the program\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << " e:" << DEBUG_COL << " Echo  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Toggle if to display or not the command that was entered\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << " h:" << DEBUG_COL << " Help  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Display this help.\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << " i:" << DEBUG_COL << " Info  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Display the current state of the user command prompt configuration\n";
+    std::cout << RESET_COL << BACKGROUND_COL << "\t" << SUCCESS_COL << " q:" << DEBUG_COL << " Quit  " << RESET_COL << BACKGROUND_COL << DEFAULT_FG << "\t Exit the program\n";
     std::cout << RESET_COL << std::flush;
 }
 
