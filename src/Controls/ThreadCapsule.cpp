@@ -42,34 +42,49 @@ void Controls::ThreadCapsule::startThread()
  */
 void Controls::ThreadCapsule::stopThread(const unsigned int delay)
 {
+    // if (_running) {
+    //     _running = false;
+
+    //     if (_thread.joinable()) {
+    //         std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+
+    //         while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(delay)) {
+    //             if (!_thread.joinable()) {
+    //                 return;
+    //             }
+    //             std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //         }
+
+    //         PRETTY_INFO << "Thread did not stop in time. Forcibly terminating." << std::endl;
+    //         try {
+    //             PRETTY_INFO << "Injecting the 'q' key to stop the thread." << std::endl;
+    //             std::cin.putback('q');
+    //             std::cin.putback('\n');
+    //             throw CustomExceptions::ThreadFound();
+    //         }
+    //         catch (const std::exception &e) {
+    //             std::cerr << "Error: " << e.what() << std::endl;
+    //         }
+    //         catch (...) {
+    //             std::cerr << "Unknown error occurred while stopping the thread." << std::endl;
+    //         }
+    //     }
+    // }
     if (_running) {
         _running = false;
-
+        PRETTY_INFO << "Injecting the 'q' key to stop the thread." << std::endl;
+        std::cin.putback('q');
+        std::cin.putback('\n');
         if (_thread.joinable()) {
-            std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-
-            while (std::chrono::steady_clock::now() - start_time < std::chrono::seconds(delay)) {
-                if (!_thread.joinable()) {
-                    return;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-
-            PRETTY_INFO << "Thread did not stop in time. Forcibly terminating." << std::endl;
-            try {
-                PRETTY_INFO << "Injecting the 'q' key to stop the thread." << std::endl;
-                std::cin.putback('q');
-                std::cin.putback('\n');
-                throw CustomExceptions::ThreadFound();
-            }
-            catch (const std::exception &e) {
-                std::cerr << "Error: " << e.what() << std::endl;
-            }
-            catch (...) {
-                std::cerr << "Unknown error occurred while stopping the thread." << std::endl;
-            }
+            _thread.join();
         }
     }
+    // if (_running) {
+    //     _running = false;
+    //     if (_thread.joinable()) {
+    //         _thread.join();
+    //     }
+    // }
 }
 
 /**
