@@ -8,7 +8,11 @@
 /**
  * @file main.cpp
  *
- * @brief File containing the main function for the program.
+ * @brief Main entry point for the program.
+ *
+ * This file contains the main function which initializes the program,
+ * processes command-line arguments, and starts the main loop for sending
+ * or receiving audio data.
  */
 
 #include "Logging.hpp"
@@ -20,15 +24,37 @@
 #include "Compressor/Manager.hpp"
 
  /**
-  * @brief Main function of the program.
+  * @brief Converts a string to an unsigned integer.
   *
-  * This function initializes the program, processes command-line arguments,
-  * and starts the main loop for sending or receiving audio data.
+  * This function attempts to convert a string to an unsigned integer.
+  * If the conversion fails, it returns a default value.
   *
-  * @param argc Number of command-line arguments.
-  * @param argv Array of command-line arguments.
-  * @return int Program exit status.
+  * @param str The string to convert.
+  * @param defaultValue The default value to return if conversion fails.
+  * @return The converted unsigned integer or the default value if conversion fails.
   */
+const unsigned int stringToUnsignedInt(const std::string &str, const unsigned int defaultValue = 0)
+{
+    try {
+        return std::stoul(str);
+    }
+    catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << ", defaulting to value: " << Recoded::myToString(defaultValue) << std::endl;
+        return defaultValue;
+    }
+}
+
+
+/**
+ * @brief Main function of the program.
+ *
+ * This function initializes the program, processes command-line arguments,
+ * and starts the main loop for sending or receiving audio data.
+ *
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return int Program exit status.
+ */
 int main(int argc, char **argv)
 {
     // Start the boot screen class
@@ -42,8 +68,9 @@ int main(int argc, char **argv)
     bool defaultSenderMode = true;
     bool defaultMonoActive = false;
     bool defaultSenderOnly = true;
-    unsigned int DefaultLoopLimit = 0;
-    int defaultPort = 9000;
+    unsigned int defaultLoopLimit = 0;
+    unsigned int defaultPacketDelay = 10;
+    unsigned int defaultPort = 9000;
     std::string defaultIp = "0.0.0.0";
     // Set the values for the flags
     int port = defaultPort;
@@ -52,7 +79,8 @@ int main(int argc, char **argv)
     bool echo = defaultEcho;
     bool log = defaultLog;
     bool debug = defaultDebug;
-    unsigned int maxRounds = DefaultLoopLimit;
+    unsigned int maxRounds = defaultLoopLimit;
+    unsigned int packetDelay = defaultPacketDelay;
     bool monoActive = defaultMonoActive;
     bool senderOnly = defaultSenderOnly;
     // Check the arguments if present
@@ -60,7 +88,11 @@ int main(int argc, char **argv)
         std::string arg = std::string(argv[i]);
         if (arg == "-p") {
             if (i + 1 < argc) {
-                port = std::stoi(argv[i + 1]);
+                port = stringToUnsignedInt(argv[i + 1], defaultPort);
+                if (port < 1024 || port > 65535) {
+                    std::cerr << "Invalid port number, please use a port number between 1024 and 65535" << std::endl;
+                    return PROGRAM_ERROR;
+                }
                 i++;
             } else {
                 std::cout << "Missing argument parameter, use -h for help" << std::endl;
@@ -82,7 +114,7 @@ int main(int argc, char **argv)
             log = true;
         } else if (arg == "-m") {
             if (i + 1 < argc) {
-                maxRounds = std::stoi(argv[i + 1]);
+                maxRounds = stringToUnsignedInt(argv[i + 1], defaultLoopLimit);
                 i++;
             } else {
                 std::cout << "Missing argument parameter, use -h for help" << std::endl;
@@ -101,6 +133,16 @@ int main(int argc, char **argv)
         } else if (arg == "-a") {
             BootScreen.displayAllScreens();
             return PROGRAM_SUCCESS;
+        } else if (arg == "-v") {
+            std::cout << "The program's version is: " << VERSION << std::endl;
+            return PROGRAM_SUCCESS;
+        } else if (arg == "--packet-delay" || arg == "-pd" || arg == "-packet-delay" || arg == "--pd" || arg == "-packetdelay" || arg == "--packetdelay") {
+            if (i + 1 < argc) {
+                packetDelay = stringToUnsignedInt(argv[i + 1], defaultPacketDelay);
+                i++;
+            } else {
+                std::cout << "Missing argument parameter, use -h for help" << std::endl;
+            }
         } else if (arg == "-h" || arg == "--help") {
             std::cout << "USAGE:\n";
             std::cout << std::string(argv[0]) << " -p <port> -i <ip> [-r <receiver> | -s <sender>] -d -l\n";
@@ -112,13 +154,15 @@ int main(int argc, char **argv)
             std::cout << "-s <sender> : Set the client to sender mode [This is for the connection reasons] (default: " << Recoded::myToString(defaultSenderMode) << ")\n";
             std::cout << "-d : Enable debug mode (default: " << Recoded::myToString(defaultDebug) << ")\n";
             std::cout << "-l : Enable log mode (default: " << Recoded::myToString(defaultLog) << ")\n";
-            std::cout << "-m <maxRounds> : Set the maximum number of rounds, 0 = endless (default: " << DefaultLoopLimit << ")\n";
+            std::cout << "-m <maxRounds> : Set the maximum number of rounds, 0 = endless (default: " << defaultLoopLimit << ")\n";
             std::cout << "-e : Enable echo mode for the user prompt (default: " << Recoded::myToString(defaultEcho) << ")\n";
             std::cout << "-a : Display all boot screens (Epilepsy warning, all the" << Recoded::myToString(BootScreen.getAvailableScreens()) << "logos will be displayed one after the other without any delay, meaning they will come out as fast as you terminal can diplay them)\n";
             std::cout << "-h, --help : Display this help message\n";
             std::cout << "-mono : Set the program to mono mode [This is for the audio management] (default " << Recoded::myToString(defaultMonoActive) << ")\n";
             std::cout << "-so : Set the program to sender only mode, will set mono mode to true [This is for the audio management] (default " << Recoded::myToString(defaultSenderOnly) << ")\n";
             std::cout << "-ro : Set the program to receiver only mode, will set mono mode to true [This is for the audio management] (default " << Recoded::myToString(!defaultSenderOnly) << ")\n";
+            std::cout << "-v : Display the program's version\n";
+            std::cout << "--packet-delay, -pd, -packet-delay, --pd, -packetdelay, --packetdelay : Set the delay between packets in milliseconds (default: " << Recoded::myToString(defaultPacketDelay) << ")\n";
             std::cout << "\n";
             std::cout << "VERSION:\n";
             std::cout << "The program's version is: " << VERSION << std::endl;

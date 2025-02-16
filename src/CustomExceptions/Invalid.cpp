@@ -143,6 +143,31 @@ namespace CustomExceptions
         return _buffer;
     }
 
+    InvalidNumber::InvalidNumber(const std::string &number, const std::string &min, const std::string &max)
+    {
+        _msg = "Error: The number you provided is invalid.\n";
+        if (!min.empty() && !max.empty()) {
+            _msg += "The number must be in the range '" + min + "' to '" + max + "'.\n";
+        } else if (!min.empty() && max.empty()) {
+            _msg += "The number must be greater than or equal to '" + min + "'.\n";
+        } else if (min.empty() && !max.empty()) {
+            _msg += "The number must be less than or equal to '" + max + "'.\n";
+        } else {
+            _msg += "The number must be a valid number.\n";
+        }
+        _msg += "The number was: '";
+        _msg += number;
+        _msg += "'.";
+        _buffer = _msg.c_str();
+    };
+
+    InvalidNumber::~InvalidNumber() {};
+
+    const char *InvalidNumber::what() const noexcept
+    {
+        return _buffer;
+    }
+
     InvalidTOML::InvalidTOML(const std::string &path, const std::string &error)
     {
         _msg = "Error: The TOML file you provided is invalid\n";

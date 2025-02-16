@@ -208,6 +208,34 @@ namespace CustomExceptions
     };
 
     /**
+     * @brief Exception class for invalid durations.
+     */
+    class InvalidNumber : public std::exception {
+        public:
+        /**
+         * @brief Construct a new InvalidNumber object.
+         *
+         * @param duration The duration provided by the user.
+         * @param min The minimum allowed duration.
+         * @param max The maximum allowed duration.
+         */
+        InvalidNumber(const std::string &number = "", const std::string &min = "", const std::string &max = "");
+        /**
+         * @brief Destroy the InvalidNumber object.
+         */
+        ~InvalidNumber();
+        /**
+         * @brief Retrieves the error message.
+         * @return A C-style string representing the error message.
+         */
+        const char *what() const noexcept;
+
+        private:
+        std::string _msg; //!< Stores the error message.
+        const char *_buffer; //!< Buffer for formatted error message.
+    };
+
+    /**
      * @brief Exception class for invalid TOML files.
      */
     class InvalidTOML : public std::exception {
