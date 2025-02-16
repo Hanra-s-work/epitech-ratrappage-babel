@@ -20,7 +20,9 @@ Controls::ThreadCapsule::ThreadCapsule()
 
 Controls::ThreadCapsule::~ThreadCapsule()
 {
-    stopThread();
+    if (_running || _thread.joinable()) {
+        stopThread();
+    }
 }
 
 /**
@@ -53,9 +55,11 @@ void Controls::ThreadCapsule::stopThread(const unsigned int delay)
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
 
-            std::cerr << "Thread did not stop in time. Forcibly terminating." << std::endl;
+            PRETTY_INFO << "Thread did not stop in time. Forcibly terminating." << std::endl;
             try {
-                std::terminate();
+                PRETTY_INFO << "Injecting the 'q' key to stop the thread." << std::endl;
+                std::cin.putback('q');
+                std::cin.putback('\n');
                 throw CustomExceptions::ThreadFound();
             }
             catch (const std::exception &e) {
